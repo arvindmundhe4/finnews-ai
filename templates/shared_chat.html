@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}FinNews - Shared Chat{% endblock %}
+
+{% block head %}
+<!-- Any additional head content specific to this page -->
+{% endblock %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden flex-col">
+    <!-- Header -->
+    <header class="bg-neutral text-white shadow-md border-b border-neutral/20">
+        <div class="w-full px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-xl font-medium flex items-center text-white">
+                <div class="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-accent flex items-center justify-center mr-2 shadow-md">
+                    <span class="font-bold tracking-tighter">FN</span>
+                </div>
+                FinNews AI
+            </a>
+            <div class="flex items-center">
+                <span class="bg-primary text-white px-3 py-1 rounded text-sm font-medium mr-3">Shared Conversation</span>
+                <a href="/" class="text-gray-300 hover:text-white flex items-center mr-3 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home
+                </a>
+                <button id="theme-toggle" class="text-gray-300 hover:text-white p-2 rounded hover:bg-accent transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages Container -->
+    <div class="flex-1 overflow-auto bg-base-100 p-4">
+        <div class="max-w-5xl mx-auto space-y-6">
+            <!-- Shared Chat Title -->
+            <div class="bg-neutral p-6 rounded-lg shadow-md">
+                <h1 class="text-2xl font-medium text-white">{{ title }}</h1>
+                <p class="text-sm text-gray-400 mt-1">Shared on {{ created_at.strftime('%B %d, %Y at %H:%M') }}</p>
+            </div>
+            
+            <!-- Messages -->
+            <div class="space-y-6">
+                {% for message in messages %}
+                    <div class="flex items-start {% if message.role == 'user' %}flex-row-reverse{% endif %}">
+                        <div class="flex-shrink-0 h-8 w-8 {% if message.role == 'user' %}bg-secondary ml-3{% else %}bg-primary mr-3{% endif %} rounded-sm flex items-center justify-center text-white">
+                            {% if message.role == 'user' %}U{% else %}F{% endif %}
+                        </div>
+                        <div class="message-content {% if message.role == 'assistant' %}bg-neutral text-gray-200 markdown-content{% else %}bg-primary text-white{% endif %} p-3 md:p-5 rounded-lg max-w-[80%] shadow-md">
+                            {% if message.role == 'assistant' %}
+                                <div class="markdown-rendered">{{ message.content | safe }}</div>
+                            {% else %}
+                                {{ message.content }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Back button -->
+            <div class="mt-6 text-center">
+                <a href="/" class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded shadow-sm transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                    Back to FinNews
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Handle theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Set initial theme based on localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+        // Check system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }
+    
+    // Toggle theme function
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', newTheme);
+    }
+    
+    // Add click event for theme toggle
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    // Process markdown in all assistant messages to ensure proper rendering
+    document.addEventListener('DOMContentLoaded', function() {
+        // Re-process all markdown content in shared messages
+        document.querySelectorAll('.markdown-rendered').forEach(element => {
+            try {
+                // Get the current content which might have raw HTML tags
+                const content = element.innerHTML;
+                
+                // Process it again to ensure proper rendering
+                if (typeof processMarkdown === 'function') {
+                    element.innerHTML = processMarkdown(content);
+                }
+            } catch (error) {
+                console.error('Error processing markdown in shared view:', error);
+            }
+        });
+    });
+</script>
+{% endblock %}

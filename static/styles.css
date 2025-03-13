@@ -1,0 +1,332 @@
+/* Custom styles for FinNews */
+.chat-bubble.chat-bubble-primary {
+    background-color: #38bdf8;
+    color: white;
+}
+
+.chat-bubble.chat-bubble-secondary {
+    background-color: #374151;
+    color: white;
+}
+
+/* Base Styles */
+:root {
+  --chat-bubble-radius: 1.5rem;
+  --chat-animation-speed: 0.3s;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-bottom: 6rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Sidebar Separation */
+aside {
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5) !important;
+  position: relative;
+  z-index: 20 !important;
+}
+
+main {
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.2) 0%, transparent 10px) !important;
+}
+
+/* Chat Elements */
+.chat-bubble {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 90%;
+}
+
+.chat-end .chat-bubble {
+  border-top-right-radius: 0;
+}
+
+.chat-start .chat-bubble {
+  border-top-left-radius: 0;
+}
+
+/* Responsive textarea */
+textarea {
+  resize: none;
+  overflow-y: hidden;
+  min-height: 24px;
+  line-height: 1.5;
+  transition: height 0.1s ease;
+}
+
+/* Markdown Content */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-content h1 {
+  font-size: 1.5rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.25rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.125rem;
+}
+
+.markdown-content p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content a {
+  color: #38bdf8;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.markdown-content a:hover {
+  opacity: 0.8;
+}
+
+.markdown-content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.markdown-content pre {
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  scrollbar-width: thin;
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 1rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.markdown-content th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.markdown-content td {
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling for sentiment analysis */
+.markdown-content thead {
+  background-color: rgba(56, 189, 248, 0.1);
+}
+
+.markdown-content tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .markdown-content table {
+    font-size: 0.9rem;
+  }
+  
+  .markdown-content td,
+  .markdown-content th {
+    padding: 0.5rem 0.3rem;
+  }
+}
+
+/* Transitions */
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Focus styles */
+.textarea:focus, 
+.input:focus, 
+.select:focus {
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+  border-color: #38bdf8;
+}
+
+.btn-primary {
+  background-color: #38bdf8;
+  color: white;
+  border-color: #38bdf8;
+}
+
+.btn-primary:hover {
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.btn-secondary {
+  background-color: #374151;
+  color: white;
+  border-color: #374151;
+}
+
+.btn-secondary:hover {
+  background-color: #1f2937;
+  border-color: #1f2937;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+/* Transition animations */
+.chat {
+    transition: all 0.3s ease;
+}
+
+/* Dark mode adjustments - handled by DaisyUI */
+[data-theme="dark"] .markdown-content pre {
+    background-color: #0f172a;
+}
+
+[data-theme="dark"] .markdown-content table thead {
+    background-color: rgba(16, 163, 127, 0.3);
+}
+
+[data-theme="dark"] .messages-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chat-bubble {
+        max-width: 80vw;
+    }
+}
+
+@media (max-width: 640px) {
+  .chat-bubble {
+    max-width: 80%;
+  }
+  
+  .markdown-content h1 {
+    font-size: 1.35rem;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.2rem;
+  }
+  
+  .markdown-content pre {
+    max-width: 100%;
+    overflow-x: scroll;
+  }
+}

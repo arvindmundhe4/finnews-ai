@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}About - FinNews{% endblock %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="bg-neutral text-white w-64 flex-shrink-0 hidden md:flex flex-col border-r border-neutral/20">
+        <div class="p-4 border-b border-neutral/20">
+            <a href="/" class="text-xl font-medium flex items-center text-white">
+                <span class="mr-2">📊</span> FinNews AI
+            </a>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4">
+            <div class="space-y-2">
+                <a href="/" class="flex items-center px-3 py-2 text-sm rounded hover:bg-accent transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home
+                </a>
+                <a href="/about" class="flex items-center px-3 py-2 text-sm rounded bg-accent transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    About
+                </a>
+                <a href="https://github.com/marketcalls/finnews" target="_blank" class="flex items-center px-3 py-2 text-sm rounded hover:bg-accent transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="w-full flex items-center px-3 py-2 text-sm rounded hover:bg-accent transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    Toggle Theme
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header for Mobile -->
+        <header class="bg-neutral text-white shadow-md border-b border-neutral/20 p-3 flex items-center justify-between md:hidden">
+            <button id="mobile-menu-button" class="p-2 rounded hover:bg-accent transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </button>
+            <div class="text-white text-lg font-medium">About FinNews</div>
+            <div class="w-10"></div> <!-- Spacer for layout balance -->
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-neutral z-50 flex flex-col hidden">
+            <div class="flex justify-between items-center p-4 border-b border-neutral/20">
+                <div class="font-medium text-lg text-white">Menu</div>
+                <button id="close-mobile-menu" class="p-2 rounded hover:bg-accent text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="space-y-2">
+                    <a href="/" class="flex items-center px-3 py-2 bg-neutral-800 text-white rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Home
+                    </a>
+                    <a href="/about" class="flex items-center px-3 py-2 bg-accent text-white rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        About
+                    </a>
+                    <a href="https://github.com/marketcalls/finnews" target="_blank" class="flex items-center px-3 py-2 bg-neutral-800 text-white rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                    <button id="mobile-theme-toggle" class="w-full flex items-center px-3 py-2 bg-neutral-800 text-white rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        Toggle Theme
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Content -->
+        <div class="flex-1 overflow-y-auto px-4 md:px-8 lg:px-16 py-8 bg-base-100">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex justify-center mb-8">
+                    <div class="w-16 h-16 bg-primary rounded-sm flex items-center justify-center text-white text-3xl">
+                        📊
+                    </div>
+                </div>
+                
+                <div class="bg-neutral p-8 rounded-lg shadow-md text-white">
+                    <h1 class="text-3xl font-medium text-center mb-8">About FinNews AI</h1>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h2 class="text-xl font-medium mb-3 text-primary">What is FinNews AI?</h2>
+                            <p class="text-gray-300">FinNews AI is a sophisticated financial news assistant that helps you stay updated with the latest market trends, stock prices, cryptocurrency movements, and economic indicators. Using advanced AI technology, it provides concise and relevant information to keep you informed about the financial world.</p>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-xl font-medium mb-3 text-primary">Features</h2>
+                            <ul class="list-disc pl-5 text-gray-300 space-y-2">
+                                <li><span class="text-white font-medium">Real-time Financial News</span> - Get the latest news on stocks, cryptocurrencies, and markets</li>
+                                <li><span class="text-white font-medium">Market Analysis</span> - Understand market trends and performance</li>
+                                <li><span class="text-white font-medium">Sentiment Analysis</span> - Gauge the sentiment around financial assets</li>
+                                <li><span class="text-white font-medium">Customizable Depth</span> - Choose how detailed you want your information</li>
+                                <li><span class="text-white font-medium">Share Conversations</span> - Share insights with colleagues and friends</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-xl font-medium mb-3 text-primary">Technology Stack</h2>
+                            <p class="text-gray-300 mb-3">FinNews AI is built using a modern technology stack that ensures reliability, performance, and a great user experience:</p>
+                            <ul class="list-disc pl-5 text-gray-300 space-y-2">
+                                <li><span class="text-white font-medium">Backend</span> - FastAPI (Python), Tortoise ORM, SQLite</li>
+                                <li><span class="text-white font-medium">Frontend</span> - HTMX, TailwindCSS, DaisyUI</li>
+                                <li><span class="text-white font-medium">AI Integration</span> - OpenAI API for analysis and content generation</li>
+                                <li><span class="text-white font-medium">Data Sources</span> - Various financial news APIs and market data providers</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-xl font-medium mb-3 text-primary">Open Source</h2>
+                            <p class="text-gray-300">FinNews AI is an open-source project that welcomes contributions from the community. If you're interested in improving the application or adding new features, visit our <a href="https://github.com/marketcalls/finnews" target="_blank" class="text-primary hover:underline">GitHub repository</a>.</p>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-xl font-medium mb-3 text-primary">Disclaimer</h2>
+                            <p class="text-gray-300">The information provided by FinNews AI is for informational purposes only and should not be considered as financial advice. Always conduct your own research and consult with a professional financial advisor before making investment decisions.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <a href="/" class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded shadow-sm transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                        </svg>
+                        Back to FinNews
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+        
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        closeMobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            html.classList.toggle('dark', newTheme === 'dark');
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', function() {
+            toggleTheme();
+            mobileMenu.classList.add('hidden');
+        });
+    });
+</script>
+{% endblock %}

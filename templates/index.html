@@ -1,0 +1,709 @@
+{% extends "base.html" %}
+
+{% block title %}FinNews - Financial News Assistant{% endblock %}
+
+{% block head %}
+<!-- Any additional head content specific to this page -->
+{% endblock %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-neutral-900 border-r-4 border-primary/30 transition-all duration-300 shadow-2xl z-10">
+        <!-- Logo and branding -->
+        <div class="p-4 border-b border-neutral/20 bg-neutral-800">
+            <a href="/" class="text-xl font-medium flex items-center text-white">
+                <div class="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-accent flex items-center justify-center mr-2 shadow-md">
+                    <span class="font-bold tracking-tighter">FN</span>
+                </div>
+                FinNews AI
+            </a>
+        </div>
+        
+        <!-- Sidebar content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Example queries section -->
+            <div class="p-4">
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">Trader Queries</h3>
+                
+                <!-- Indian Stock Market Queries -->
+                <div class="mb-3">
+                    <h4 class="text-xs text-gray-500 mb-2">Indian Stock Market</h4>
+                    <div class="space-y-1.5">
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="Nifty 50 performance today">Nifty 50 performance today</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="Bank Nifty technical outlook">Bank Nifty technical outlook</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="FII and DII trends in Indian Stock Market (Both Cash and Futures)">FII and DII trends</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="BSE Sensex analysis">BSE Sensex analysis</button>
+                    </div>
+                </div>
+                
+                <!-- Indian Stocks Queries -->
+                <div class="mb-3">
+                    <h4 class="text-xs text-gray-500 mb-2">Indian Stocks</h4>
+                    <div class="space-y-1.5">
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="Reliance Industries stock news">Reliance Industries stock news</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="HDFC Bank quarterly results">HDFC Bank quarterly results</button>
+                    </div>
+                </div>
+                
+                <!-- Indian Economy Queries -->
+                <div class="mb-3">
+                    <h4 class="text-xs text-gray-500 mb-2">Indian Economy</h4>
+                    <div class="space-y-1.5">
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="RBI monetary policy impact">RBI monetary policy impact</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="India GDP growth forecast">India GDP growth forecast</button>
+                    </div>
+                </div>
+                
+                <!-- US Markets Queries -->
+                <div class="mb-3">
+                    <h4 class="text-xs text-gray-500 mb-2">US Markets</h4>
+                    <div class="space-y-1.5">
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="S&P 500 performance this week">S&P 500 performance this week</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200 bg-neutral-800" data-query="NASDAQ tech stocks outlook">NASDAQ tech stocks outlook</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation links -->
+            <div class="p-4 border-t border-neutral/20">
+                <div class="space-y-2">
+                    <a href="/about" class="flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        About
+                    </a>
+                    <a href="https://github.com/marketcalls/finnews" target="_blank" class="flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                    <button id="theme-toggle" class="w-full flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        Toggle Theme
+                    </button>
+                    <button id="share-button" class="w-full flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-base-200 to-base-100">
+        <!-- Mobile Header -->
+        <header class="md:hidden flex items-center justify-between p-4 border-b border-neutral/20 bg-neutral-900">
+            <button id="mobile-menu-button" class="p-1 rounded hover:bg-accent">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </button>
+            <div class="text-white font-medium flex items-center">
+                <div class="w-7 h-7 rounded-md bg-gradient-to-br from-primary to-accent flex items-center justify-center mr-2 shadow-md">
+                    <span class="font-bold text-xs tracking-tighter">FN</span>
+                </div>
+                FinNews AI
+            </div>
+            <button id="mobile-share-button" class="p-1 rounded hover:bg-accent">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-neutral-900 z-50 flex flex-col hidden">
+            <div class="flex justify-between items-center p-4 border-b border-neutral/20 bg-neutral-800">
+                <div class="text-white font-medium">Menu</div>
+                <button id="close-mobile-menu" class="p-1 rounded hover:bg-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-4 overflow-y-auto">
+                <!-- Indian Stock Market Queries -->
+                <div class="mb-4">
+                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">Indian Stock Market</h4>
+                    <div class="space-y-2">
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Nifty 50 performance today">Nifty 50 performance today</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Bank Nifty technical outlook">Bank Nifty technical outlook</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Latest NSE market trends">Latest NSE market trends</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="BSE Sensex analysis">BSE Sensex analysis</button>
+                    </div>
+                </div>
+                
+                <!-- Indian Stocks Queries -->
+                <div class="mb-4">
+                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">Indian Stocks</h4>
+                    <div class="space-y-2">
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Reliance Industries stock news">Reliance Industries stock news</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="HDFC Bank quarterly results">HDFC Bank quarterly results</button>
+                    </div>
+                </div>
+                
+                <!-- Indian Economy Queries -->
+                <div class="mb-4">
+                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">Indian Economy</h4>
+                    <div class="space-y-2">
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="RBI monetary policy impact">RBI monetary policy impact</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="India GDP growth forecast">India GDP growth forecast</button>
+                    </div>
+                </div>
+                
+                <!-- US Markets Queries -->
+                <div class="mb-4">
+                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">US Markets</h4>
+                    <div class="space-y-2">
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="S&P 500 performance this week">S&P 500 performance this week</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="NASDAQ tech stocks outlook">NASDAQ tech stocks outlook</button>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <a href="/about" class="flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        About
+                    </a>
+                    <a href="https://github.com/marketcalls/finnews" target="_blank" class="flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                    <button id="mobile-theme-toggle" class="w-full flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        Toggle Theme
+                    </button>
+                    <button id="mobile-share-button-menu" class="w-full flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messages-container" class="flex-1 overflow-y-auto p-3 md:p-6 bg-gradient-to-b from-neutral-900/40 to-base-100">
+            <div class="max-w-5xl mx-auto space-y-6">
+                <!-- Dynamic Messages Will Be Added Here -->
+                <div id="chat-messages" class="pb-2"></div>
+                
+                <!-- Welcome message -->
+                <div class="welcome-screen text-center py-8 px-4">
+                    <div class="flex justify-center mb-6">
+                        <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+                            <span class="font-bold text-2xl tracking-tighter text-white">FN</span>
+                        </div>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-100 mb-3">Welcome to FinNews AI</h1>
+                    <p class="text-gray-300 mb-6 max-w-2xl mx-auto">Your intelligent financial news assistant powered by AI. Ask about market trends, stock performance, economic indicators, and more.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                        <button class="welcome-example-query p-3 bg-neutral-800 rounded-lg hover:bg-primary/20 transition-all duration-200 text-left">
+                            <span class="block font-medium mb-1 text-primary">Nifty 50 performance today</span>
+                            <span class="text-sm text-gray-400">Get today's market data and analysis</span>
+                        </button>
+                        <button class="welcome-example-query p-3 bg-neutral-800 rounded-lg hover:bg-primary/20 transition-all duration-200 text-left">
+                            <span class="block font-medium mb-1 text-primary">RBI monetary policy impact</span>
+                            <span class="text-sm text-gray-400">Understand economic implications</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="border-t border-neutral/20 bg-neutral-900 p-2 md:p-4">
+            <div class="max-w-5xl mx-auto">
+                <form id="chat-form" class="relative">
+                    <div class="flex flex-col shadow-lg rounded-lg overflow-hidden bg-neutral-800">
+                        <select id="search-depth" class="bg-neutral-800 border-0 text-gray-300 text-sm p-2.5 focus:ring-1 focus:ring-primary border-b border-neutral-700">
+                            <option value="low">Quick Search</option>
+                            <option value="medium">Standard Analysis</option>
+                            <option value="high" selected>Deep Analysis</option>
+                        </select>
+                        <div class="relative flex">
+                            <textarea id="chat-input" rows="2" class="w-full text-white bg-neutral-800 border-0 p-4 pr-16 focus:ring-1 focus:ring-primary resize-none" placeholder="Ask about financial news, market trends..." style="min-height: 60px;"></textarea>
+                            <button type="submit" class="absolute right-2 bottom-3 bg-primary hover:bg-primary-focus text-white rounded-full p-2 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-2 ml-2">Press Enter to send, Shift+Enter for new line</div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Share Dialog -->
+<div id="share-dialog" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="absolute inset-0 bg-black/70" id="share-dialog-overlay"></div>
+    <div class="relative bg-neutral-800 rounded-lg shadow-xl max-w-md w-full p-6 transform transition-all">
+        <h3 class="text-xl font-medium text-white mb-4">Share Conversation</h3>
+        <p class="text-gray-300 mb-4">Share this conversation with others:</p>
+        
+        <!-- Loading state -->
+        <div id="share-loader" class="hidden py-4 flex justify-center items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        </div>
+        
+        <!-- Error message -->
+        <div id="share-error" class="hidden bg-error/20 text-error p-3 rounded mb-4"></div>
+        
+        <!-- Share button -->
+        <div id="share-button-dialog" class="mb-4">
+            <button class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">
+                Generate Shareable Link
+            </button>
+        </div>
+        
+        <!-- Share URL container -->
+        <div id="share-url-container" class="flex flex-col space-y-4 mb-4 hidden">
+            <div class="flex items-center relative">
+                <input id="share-url" type="text" class="flex-grow bg-neutral-700 border border-gray-700 text-white px-4 py-3 rounded-md w-full pr-20" readonly>
+                <button id="share-copy" class="absolute right-2 px-4 py-1.5 bg-accent hover:bg-accent/80 text-white rounded-md transition-colors shadow-sm">
+                    Copy
+                </button>
+            </div>
+            <p class="text-sm text-gray-400">Anyone with this link can view this conversation</p>
+        </div>
+        
+        <div class="flex space-x-3 justify-end">
+            <button id="close-share-dialog" class="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-600 transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const searchDepth = document.getElementById('search-depth');
+        const chatMessages = document.getElementById('chat-messages');
+        const messagesContainer = document.getElementById('messages-container');
+        const shareButton = document.getElementById('share-button');
+        const mobileShareButton = document.getElementById('mobile-share-button');
+        const mobileShareMenuButton = document.getElementById('mobile-share-button-menu');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMenuButton = document.getElementById('close-mobile-menu');
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        const shareDialog = document.getElementById('share-dialog');
+        const shareDialogBackdrop = document.getElementById('share-dialog-overlay');
+        const closeShareButton = document.getElementById('close-share-dialog');
+        const copyShareButton = document.getElementById('share-copy');
+        const shareUrlInput = document.getElementById('share-url');
+        const welcomeScreen = document.querySelector('.welcome-screen');
+        const welcomeExampleQueries = document.querySelectorAll('.welcome-example-query');
+        const exampleButtons = document.querySelectorAll('.example-query, .mobile-example-query');
+        let conversationHistory = [];
+
+        // Set initial textarea height
+        chatInput.style.height = (chatInput.scrollHeight) + 'px';
+        
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Handle Enter and Shift+Enter in textarea
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (e.shiftKey) {
+                    // Let the newline happen naturally with Shift+Enter
+                    return true;
+                } else {
+                    // Prevent default behavior and send message
+                    e.preventDefault();
+                    sendMessage();
+                    return false;
+                }
+            }
+        });
+
+        // Toggle mobile menu
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.remove('hidden');
+        });
+
+        closeMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.add('hidden');
+        });
+
+        // Handle example query clicks
+        exampleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const query = this.getAttribute('data-query');
+                chatInput.value = query;
+                
+                if (this.classList.contains('mobile-example-query')) {
+                    mobileMenu.classList.add('hidden');
+                }
+                
+                sendMessage();
+            });
+        });
+
+        // Handle welcome screen example queries
+        welcomeExampleQueries.forEach(button => {
+            button.addEventListener('click', function() {
+                const query = this.querySelector('span').textContent;
+                chatInput.value = query;
+                sendMessage();
+            });
+        });
+
+        // Handle theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            html.classList.toggle('dark', newTheme === 'dark');
+            localStorage.setItem('theme', newTheme);
+            
+            // Update icon
+            const isDark = newTheme === 'dark';
+            const themeIcon = isDark 
+                ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>';
+            
+            themeToggle.innerHTML = themeIcon + 'Toggle Theme';
+            mobileThemeToggle.innerHTML = themeIcon + 'Toggle Theme';
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', function() {
+            toggleTheme();
+            mobileMenu.classList.add('hidden');
+        });
+
+        // Handle share functionality
+        function shareChat() {
+            // Show share dialog
+            shareDialog.classList.remove('hidden');
+            
+            // Reset dialog state
+            document.getElementById('share-url-container').classList.add('hidden');
+            document.getElementById('share-loader').classList.add('hidden');
+            document.getElementById('share-error').classList.add('hidden');
+            document.getElementById('share-button-dialog').classList.remove('hidden');
+            shareUrlInput.value = '';
+        }
+
+        async function generateShareLink() {
+            try {
+                // Show loading state
+                document.getElementById('share-button-dialog').classList.add('hidden');
+                document.getElementById('share-loader').classList.remove('hidden');
+                
+                // Create a safe version of messages to share
+                let messages = [];
+                
+                // First try to use conversationHistory if it's populated
+                if (conversationHistory && conversationHistory.length > 0) {
+                    messages = [...conversationHistory]; // Create a copy
+                } else {
+                    // Fallback: Extract messages from DOM if conversationHistory is empty
+                    const messageElements = chatMessages.querySelectorAll('.message');
+                    
+                    messageElements.forEach(msg => {
+                        const role = msg.classList.contains('user-message') ? 'user' : 'assistant';
+                        const contentEl = msg.querySelector('.message-content');
+                        let content = '';
+                        
+                        if (role === 'user') {
+                            content = contentEl.textContent.trim();
+                        } else {
+                            // For assistant messages, try to get the raw markdown content
+                            const markdownEl = contentEl.querySelector('.markdown-rendered');
+                            if (markdownEl) {
+                                content = markdownEl.innerText.trim();
+                            } else {
+                                content = contentEl.textContent.trim();
+                            }
+                        }
+                        
+                        if (content) {
+                            messages.push({ role, content });
+                        }
+                    });
+                }
+                
+                if (messages.length === 0) {
+                    showShareError("No conversation to share. Send at least one message first.");
+                    return;
+                }
+                
+                console.log("Sharing messages:", messages); // Debug
+                
+                // Make API request to share chat
+                const response = await fetch('/api/share_chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: document.title || "FinNews Conversation",
+                        messages: messages
+                    })
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to share conversation');
+                }
+                
+                const data = await response.json();
+                
+                // Create share URL
+                const baseUrl = window.location.origin;
+                const shareUrl = `${baseUrl}/shared/${data.share_id}`;
+                
+                // Show share URL
+                document.getElementById('share-loader').classList.add('hidden');
+                document.getElementById('share-url-container').classList.remove('hidden');
+                
+                shareUrlInput.value = shareUrl;
+                shareUrlInput.focus();
+                shareUrlInput.select();
+                
+            } catch (error) {
+                console.error('Error sharing conversation:', error);
+                showShareError(error.message || 'Failed to share conversation. Please try again.');
+            }
+        }
+
+        function showShareError(message) {
+            document.getElementById('share-loader').classList.add('hidden');
+            document.getElementById('share-button-dialog').classList.remove('hidden');
+            
+            const errorEl = document.getElementById('share-error');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+        
+        // Add event listeners for share buttons
+        shareButton.addEventListener('click', shareChat);
+        mobileShareButton.addEventListener('click', shareChat);
+        mobileShareMenuButton.addEventListener('click', function() {
+            shareChat();
+            mobileMenu.classList.add('hidden');
+        });
+        
+        // Add event listeners for share dialog
+        closeShareButton.addEventListener('click', function() {
+            shareDialog.classList.add('hidden');
+        });
+        
+        shareDialogBackdrop.addEventListener('click', function() {
+            shareDialog.classList.add('hidden');
+        });
+        
+        document.getElementById('share-button-dialog').addEventListener('click', generateShareLink);
+        
+        // Add event listener for copy button
+        if (copyShareButton) {
+            copyShareButton.addEventListener('click', function() {
+                const textToCopy = shareUrlInput.value;
+                
+                // Use modern Clipboard API
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Success
+                    const originalText = copyShareButton.textContent;
+                    
+                    copyShareButton.textContent = 'Copied!';
+                    copyShareButton.classList.add('bg-primary');
+                    copyShareButton.classList.remove('bg-accent', 'hover:bg-accent/80');
+                    
+                    setTimeout(() => {
+                        copyShareButton.textContent = originalText;
+                        copyShareButton.classList.remove('bg-primary');
+                        copyShareButton.classList.add('bg-accent', 'hover:bg-accent/80');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy the link. Please try selecting and copying manually.');
+                });
+            });
+        }
+
+        // Send message on form submit
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        // Implement send message functionality
+        function sendMessage() {
+            const query = chatInput.value.trim();
+            const depth = searchDepth.value;
+            
+            if (!query) return;
+            
+            // Hide welcome screen if visible
+            if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
+                welcomeScreen.classList.add('hidden');
+            }
+            
+            // Add user message to UI
+            addMessageToUI('user', query);
+            
+            // Clear input and reset height
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            
+            // Show loading indicator
+            showLoadingIndicator();
+            
+            // Scroll to bottom of messages
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Send message to server
+            fetch('/api/get_news', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    search_depth: depth
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Remove loading indicator
+                removeLoadingIndicator();
+                
+                // Add assistant message to UI
+                addMessageToUI('assistant', data.response);
+                
+                // Scroll to bottom of messages
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                removeLoadingIndicator();
+                
+                // Add error message to UI
+                addMessageToUI('assistant', `<p>Sorry, I'm having trouble connecting to the server. Please try again later.</p><p>Error: ${error.message}</p>`);
+                
+                // Scroll to bottom of messages
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+        
+        // Add message to UI
+        function addMessageToUI(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message flex items-start ${role === 'user' ? 'user-message flex-row-reverse' : 'assistant-message'} mb-6`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = `flex-shrink-0 h-10 w-10 ${role === 'user' ? 'bg-secondary ml-3' : 'bg-primary mr-3'} rounded-lg flex items-center justify-center text-white shadow-md`;
+            avatar.textContent = role === 'user' ? 'U' : 'F';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = `message-content ${role === 'user' ? 'bg-primary text-white' : 'bg-neutral text-gray-200'} p-4 md:p-5 rounded-lg max-w-[85%] shadow-md ${role === 'assistant' ? 'markdown-content' : ''}`;
+            
+            if (role === 'assistant') {
+                try {
+                    // First check if marked is available
+                    if (typeof marked === 'undefined') {
+                        console.error('marked library is not available');
+                        messageContent.innerHTML = content;
+                    } else {
+                        // Use the global processMarkdown function
+                        const processedContent = processMarkdown(content);
+                        const markdownDiv = document.createElement('div');
+                        markdownDiv.className = 'markdown-rendered';
+                        markdownDiv.innerHTML = processedContent;
+                        messageContent.appendChild(markdownDiv);
+                    }
+                } catch (error) {
+                    console.error('Error parsing markdown:', error);
+                    messageContent.textContent = content;
+                }
+            } else {
+                messageContent.textContent = content;
+            }
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            chatMessages.appendChild(messageDiv);
+            
+            // Update conversation history for sharing
+            conversationHistory.push({role: role, content: content});
+            
+            // Make external links open in new tabs
+            if (role === 'assistant') {
+                messageContent.querySelectorAll('a').forEach(link => {
+                    link.setAttribute('target', '_blank');
+                    link.setAttribute('rel', 'noopener noreferrer');
+                });
+            }
+        }
+        
+        // Show loading indicator
+        function showLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-indicator';
+            loadingDiv.className = 'message flex items-start';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'flex-shrink-0 h-10 w-10 bg-primary mr-3 rounded-lg flex items-center justify-center text-white shadow-md';
+            avatar.textContent = 'F';
+            
+            const loadingContent = document.createElement('div');
+            loadingContent.className = 'bg-neutral p-5 rounded-lg text-gray-200 shadow-md';
+            loadingContent.innerHTML = `
+                <div class="flex space-x-3">
+                    <div class="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                </div>
+            `;
+            
+            loadingDiv.appendChild(avatar);
+            loadingDiv.appendChild(loadingContent);
+            chatMessages.appendChild(loadingDiv);
+        }
+        
+        // Remove loading indicator
+        function removeLoadingIndicator() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FinNews AI{% endblock %}</title>
+    
+    <!-- Tailwind CSS and DaisyUI via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Markdown processing libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    
+    <style>
+        /* Citation styling */
+        .citation {
+            background-color: rgba(16, 163, 127, 0.15);
+            border-radius: 4px;
+            padding: 0 4px;
+            color: rgba(16, 163, 127, 1);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .citation:hover {
+            background-color: rgba(16, 163, 127, 0.25);
+            text-decoration: underline;
+        }
+        
+        /* Table styling */
+        .sentiment-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sentiment-table thead {
+            background-color: rgba(16, 163, 127, 0.9);
+            color: white;
+        }
+        
+        .sentiment-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .sentiment-table td {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sentiment-table tbody tr {
+            background-color: rgba(55, 55, 55, 0.5);
+            transition: background-color 0.2s ease;
+        }
+        
+        .sentiment-table tbody tr:hover {
+            background-color: rgba(55, 55, 55, 0.8);
+        }
+        
+        .score-positive {
+            color: rgb(0, 200, 83);
+            font-weight: 600;
+        }
+        
+        .score-negative {
+            color: rgb(255, 85, 85);
+            font-weight: 600;
+        }
+        
+        .score-neutral {
+            color: rgb(170, 170, 170);
+            font-weight: 600;
+        }
+        
+        /* Improve readability */
+        .markdown-content h1, 
+        .markdown-content h2, 
+        .markdown-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .markdown-content h1 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+        
+        .markdown-content h2 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.3rem;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.25rem;
+        }
+        
+        .markdown-content p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        
+        .markdown-content ul, 
+        .markdown-content ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .markdown-content strong {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .message-content {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+    </style>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='0' y='0' width='100' height='100' rx='15' fill='url(%23gradient)'/%3E%3Cdefs%3E%3ClinearGradient id='gradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310a37f;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23202123;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50' y='65' font-family='Arial, sans-serif' font-size='40' font-weight='bold' fill='white' text-anchor='middle' letter-spacing='-2'%3EFN%3C/text%3E%3C/svg%3E">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10a37f',
+                        secondary: '#202123',
+                        accent: '#202123',
+                        neutral: '#373737',
+                    }
+                }
+            },
+            plugins: [require("daisyui")],
+            daisyui: {
+                themes: [
+                    {
+                        light: {
+                            ...require("daisyui/src/theming/themes")["light"],
+                            primary: "#10a37f",
+                            secondary: "#6B7280",
+                            accent: "#FFFFFF",
+                            neutral: "#F8F8F8",
+                            "base-100": "#FFFFFF",
+                            "base-200": "#F8F8F8",
+                            "base-300": "#EEEEEE",
+                        },
+                        dark: {
+                            ...require("daisyui/src/theming/themes")["dark"],
+                            primary: "#10a37f",
+                            secondary: "#6B7280",
+                            accent: "#202123",
+                            neutral: "#373737",
+                            "base-100": "#111111",
+                            "base-200": "#202123",
+                            "base-300": "#373737",
+                        },
+                    },
+                ],
+            },
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <div class="w-full min-h-screen flex flex-col">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content">
+        <div>
+            <p> 2025 FinNews AI - Built with FastAPI, HTMX, DaisyUI, and TailwindCSS</p>
+        </div>
+    </footer>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    
+    <script>
+        // Set theme based on localStorage or system preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+        });
+    </script>
+    
+    <!-- Common scripts -->
+    <script>
+    // Configure marked.js globally
+    marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: true,
+        mangle: false,
+        sanitize: false  // Allow HTML to pass through
+    });
+    
+    // Helper function to process markdown content
+    function processMarkdown(content) {
+        try {
+            // Parse markdown to HTML
+            const parsedContent = marked.parse(content);
+            
+            // Custom DOMPurify configuration to allow our elements and classes
+            const purifyConfig = {
+                ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol', 
+                              'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div', 
+                              'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'span'],
+                ALLOWED_ATTR: ['href', 'name', 'target', 'class', 'id', 'style', 'rel'],
+                ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
+            };
+            
+            // Sanitize the HTML
+            return DOMPurify.sanitize(parsedContent, purifyConfig);
+        } catch (error) {
+            console.error('Error processing markdown:', error);
+            return content; // Return original content if there's an error
+        }
+    }
+    
+    // Process all markdown content when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.markdown-rendered').forEach(element => {
+            // Get the innerHTML which might contain raw markdown or HTML tags
+            const content = element.innerHTML;
+            
+            // Replace any visible HTML tags with their rendered equivalents
+            const processedContent = processMarkdown(content);
+            
+            // Update the element with the processed content
+            element.innerHTML = processedContent;
+        });
+    });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
