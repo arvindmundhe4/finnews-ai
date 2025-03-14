@@ -1,0 +1,16 @@
+[Unit]
+Description=FinNews AI Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/python/finnews/finnews
+Environment="PATH=/var/python/finnews/venv/bin"
+ExecStart=/var/python/finnews/venv/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker -b 127.0.0.1:8000
+Restart=always
+RestartSec=5
+SyslogIdentifier=finnews
+
+[Install]
+WantedBy=multi-user.target
