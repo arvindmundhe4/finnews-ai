@@ -33,6 +33,8 @@ ENV/
 *.db
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
 
 # IDE
 .idea/

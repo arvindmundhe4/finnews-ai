@@ -10,13 +10,13 @@ from fastapi import FastAPI, Request, Form, HTTPException, Depends, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 from tortoise.contrib.fastapi import register_tortoise
+
+# Import middlewares and routes
+from middleware import setup_middlewares
+from routes import router as api_router
 
 # Load environment variables
 load_dotenv()
@@ -28,19 +28,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Configure rate limiter
-limiter = Limiter(key_func=get_remote_address)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# Setup middlewares
+setup_middlewares(app)
 
 # Set OpenAI API key from environment variables
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -59,14 +48,13 @@ templates = Jinja2Templates(directory="templates")
 DB_DIR = os.path.dirname(__file__)
 DB_PATH = os.path.join(DB_DIR, "database.sqlite")
 
-# Setup routes (importing after app initialization to avoid circular imports)
-from routes import router as api_router
+# Register router
 app.include_router(api_router)
 
 # Register Tortoise ORM
 register_tortoise(
     app,
-    db_url=f"sqlite://{DB_PATH}",
+    db_url=os.getenv("DATABASE_URL", f"sqlite://{DB_PATH}"),
     modules={"models": ["models"]},
     generate_schemas=True,
     add_exception_handlers=True,

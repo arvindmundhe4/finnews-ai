@@ -9,12 +9,12 @@
 {% block content %}
 <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="hidden md:flex flex-col w-64 bg-neutral-900 border-r-4 border-primary/30 transition-all duration-300 shadow-2xl z-10">
+    <aside class="hidden md:flex flex-col w-64 bg-base-300 border-r-4 border-primary/30 transition-all duration-300 shadow-2xl z-10">
         <!-- Logo and branding -->
-        <div class="p-4 border-b border-neutral/20 bg-neutral-800">
-            <a href="/" class="text-xl font-medium flex items-center text-white">
+        <div class="p-4 border-b border-neutral/20 bg-base-200">
+            <a href="/" class="text-xl font-medium flex items-center">
                 <div class="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-accent flex items-center justify-center mr-2 shadow-md">
-                    <span class="font-bold tracking-tighter">FN</span>
+                    <span class="font-bold tracking-tighter text-white">FN</span>
                 </div>
                 FinNews AI
             </a>
@@ -24,7 +24,7 @@
         <div class="flex-1 overflow-y-auto">
             <!-- Example queries section -->
             <div class="p-4">
-                <h3 class="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">Trader Queries</h3>
+                <h3 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Trader Queries</h3>
                 
                 <!-- Indian Stock Market Queries -->
                 <div class="mb-3">
@@ -74,17 +74,11 @@
                         </svg>
                         About
                     </a>
-                    <a href="https://github.com/marketcalls/finnews" target="_blank" class="flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        GitHub
-                    </a>
                     <button id="theme-toggle" class="w-full flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
-                        Toggle Theme
+                        Themes
                     </button>
                     <button id="share-button" class="w-full flex items-center px-3 py-2 rounded text-sm text-gray-200 hover:bg-accent transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,94 +94,61 @@
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-base-200 to-base-100">
         <!-- Mobile Header -->
-        <header class="md:hidden flex items-center justify-between p-4 border-b border-neutral/20 bg-neutral-900">
-            <button id="mobile-menu-button" class="p-1 rounded hover:bg-accent">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <header class="md:hidden flex items-center justify-between p-4 border-b border-neutral/20 bg-base-300">
+            <button id="mobile-menu-button" class="p-1 rounded hover:bg-primary/10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
                 </svg>
             </button>
-            <div class="text-white font-medium flex items-center">
+            <div class="font-medium flex items-center">
                 <div class="w-7 h-7 rounded-md bg-gradient-to-br from-primary to-accent flex items-center justify-center mr-2 shadow-md">
-                    <span class="font-bold text-xs tracking-tighter">FN</span>
+                    <span class="font-bold text-xs tracking-tighter text-white">FN</span>
                 </div>
                 FinNews AI
             </div>
-            <button id="mobile-share-button" class="p-1 rounded hover:bg-accent">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button id="mobile-share-button" class="p-1 rounded hover:bg-primary/10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                 </svg>
             </button>
         </header>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="fixed inset-0 bg-neutral-900 z-50 flex flex-col hidden">
-            <div class="flex justify-between items-center p-4 border-b border-neutral/20 bg-neutral-800">
-                <div class="text-white font-medium">Menu</div>
-                <button id="close-mobile-menu" class="p-1 rounded hover:bg-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div id="mobile-menu" class="fixed inset-0 bg-base-200 z-50 flex flex-col hidden">
+            <div class="flex justify-between items-center p-4 border-b border-neutral/20 bg-base-300">
+                <div class="font-medium">Menu</div>
+                <button id="close-mobile-menu" class="p-1 rounded hover:bg-primary/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
             <div class="p-4 space-y-4 overflow-y-auto">
-                <!-- Indian Stock Market Queries -->
+                <!-- Example queries section -->
                 <div class="mb-4">
-                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">Indian Stock Market</h4>
+                    <h4 class="text-xs uppercase text-gray-500 font-medium mb-2">Trader Queries</h4>
                     <div class="space-y-2">
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Nifty 50 performance today">Nifty 50 performance today</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Bank Nifty technical outlook">Bank Nifty technical outlook</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Latest NSE market trends">Latest NSE market trends</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="BSE Sensex analysis">BSE Sensex analysis</button>
-                    </div>
-                </div>
-                
-                <!-- Indian Stocks Queries -->
-                <div class="mb-4">
-                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">Indian Stocks</h4>
-                    <div class="space-y-2">
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="Reliance Industries stock news">Reliance Industries stock news</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="HDFC Bank quarterly results">HDFC Bank quarterly results</button>
-                    </div>
-                </div>
-                
-                <!-- Indian Economy Queries -->
-                <div class="mb-4">
-                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">Indian Economy</h4>
-                    <div class="space-y-2">
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="RBI monetary policy impact">RBI monetary policy impact</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="India GDP growth forecast">India GDP growth forecast</button>
-                    </div>
-                </div>
-                
-                <!-- US Markets Queries -->
-                <div class="mb-4">
-                    <h4 class="text-xs uppercase text-gray-400 font-medium mb-2">US Markets</h4>
-                    <div class="space-y-2">
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="S&P 500 performance this week">S&P 500 performance this week</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-neutral-800 text-gray-200" data-query="NASDAQ tech stocks outlook">NASDAQ tech stocks outlook</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="What were the top performing S&P 500 stocks today?">What were the top performing S&P 500 stocks today?</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Summarize the latest Fed meeting minutes">Summarize the latest Fed meeting minutes</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="What factors are driving crude oil prices this week?">What factors are driving crude oil prices this week?</button>
+                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Explain the current yield curve and its implications">Explain the current yield curve and its implications</button>
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <a href="/about" class="flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/about" class="flex items-center px-3 py-2 rounded bg-base-200 text-base-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         About
                     </a>
-                    <a href="https://github.com/marketcalls/finnews" target="_blank" class="flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        GitHub
-                    </a>
-                    <button id="mobile-theme-toggle" class="w-full flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button id="mobile-theme-toggle" class="w-full flex items-center px-3 py-2 rounded bg-base-200 text-base-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
                         Toggle Theme
                     </button>
-                    <button id="mobile-share-button-menu" class="w-full flex items-center px-3 py-2 rounded bg-neutral-800 text-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button id="mobile-share-menu-button" class="w-full flex items-center px-3 py-2 rounded bg-base-200 text-base-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
                         Share
@@ -197,31 +158,26 @@
         </div>
 
         <!-- Messages Container -->
-        <div id="messages-container" class="flex-1 overflow-y-auto p-3 md:p-6 bg-gradient-to-b from-neutral-900/40 to-base-100">
+        <div id="messages-container" class="flex-1 overflow-y-auto p-3 md:p-6 bg-gradient-to-b from-base-200 to-base-100">
             <div class="max-w-5xl mx-auto space-y-6">
-                <!-- Dynamic Messages Will Be Added Here -->
-                <div id="chat-messages" class="pb-2"></div>
-                
-                <!-- Welcome message -->
-                <div class="welcome-screen text-center py-8 px-4">
-                    <div class="flex justify-center mb-6">
-                        <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-                            <span class="font-bold text-2xl tracking-tighter text-white">FN</span>
-                        </div>
-                    </div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-100 mb-3">Welcome to FinNews AI</h1>
-                    <p class="text-gray-300 mb-6 max-w-2xl mx-auto">Your intelligent financial news assistant powered by AI. Ask about market trends, stock performance, economic indicators, and more.</p>
+                <!-- Welcome Message -->
+                <div id="welcome-message" class="welcome-message bg-base-300 shadow-lg rounded-xl p-6 md:p-8 border border-base-300/50">
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2 text-center">Welcome to FinNews AI</h1>
+                    <p class="text-base-content/80 mb-6 max-w-2xl mx-auto">Your intelligent financial news assistant powered by AI. Ask about market trends, stock performance, economic indicators, and more.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
-                        <button class="welcome-example-query p-3 bg-neutral-800 rounded-lg hover:bg-primary/20 transition-all duration-200 text-left">
-                            <span class="block font-medium mb-1 text-primary">Nifty 50 performance today</span>
-                            <span class="text-sm text-gray-400">Get today's market data and analysis</span>
+                        <button class="welcome-example-query p-3 bg-base-200 rounded-lg hover:bg-primary/10 transition-all duration-200 text-left">
+                            <span class="block font-medium mb-1 text-primary">What were the top performing S&P 500 stocks today?</span>
+                            <span class="text-sm text-base-content/70">Get today's market data and analysis</span>
                         </button>
-                        <button class="welcome-example-query p-3 bg-neutral-800 rounded-lg hover:bg-primary/20 transition-all duration-200 text-left">
-                            <span class="block font-medium mb-1 text-primary">RBI monetary policy impact</span>
-                            <span class="text-sm text-gray-400">Understand economic implications</span>
+                        <button class="welcome-example-query p-3 bg-base-200 rounded-lg hover:bg-primary/10 transition-all duration-200 text-left">
+                            <span class="block font-medium mb-1 text-primary">Summarize the latest Fed meeting minutes</span>
+                            <span class="text-sm text-base-content/70">Understand economic implications</span>
                         </button>
                     </div>
                 </div>
+                
+                <!-- Dynamic Messages Will Be Added Here -->
+                <div id="chat-messages" class="pb-2"></div>
             </div>
         </div>
 
@@ -410,8 +366,8 @@
             // Reset dialog state
             document.getElementById('share-url-container').classList.add('hidden');
             document.getElementById('share-loader').classList.add('hidden');
-            document.getElementById('share-error').classList.add('hidden');
             document.getElementById('share-button-dialog').classList.remove('hidden');
+            document.getElementById('share-error').classList.add('hidden');
             shareUrlInput.value = '';
         }
 
