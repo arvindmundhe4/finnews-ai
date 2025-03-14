@@ -8,7 +8,7 @@ class SharedChat(Model):
     id = fields.CharField(max_length=36, pk=True)
     title = fields.CharField(max_length=255)
     messages = fields.JSONField()
-    created_at = fields.DatetimeField(auto_now_add=True)
+    created_at = fields.DatetimeField()  # Removed auto_now_add to allow explicit time setting
 
     class Meta:
         table = "shared_chats"

@@ -33,12 +33,16 @@ async def share_chat(request: Request, data: Dict[str, Any]):
         # Generate a unique ID for the shared chat
         share_id = str(uuid.uuid4())
         
+        # Get current time explicitly
+        now = datetime.now()
+        
         # Store in database - ensure consistent storage format for messages
         # The tortoise-orm JSONField stores Python objects directly
         await SharedChat.create(
             id=share_id,
             title=title,
-            messages=messages  # Store as a Python list directly
+            messages=messages,  # Store as a Python list directly
+            created_at=now  # Explicitly set the current time
         )
         
         return {"share_id": share_id}
@@ -78,9 +82,8 @@ async def view_shared_chat(request: Request, share_id: str):
         title = shared_chat.title
         created_at = shared_chat.created_at
         
-        # Format the date in IST timezone (UTC+5:30)
-        ist_offset = timedelta(hours=5, minutes=30)
-        ist_time = created_at + ist_offset
+        # Display the time as it is (already in IST) without adding offset
+        # The auto_now_add time from tortoise ORM is using the local server time
         
         return templates.TemplateResponse(
             "shared_chat.html",
@@ -88,7 +91,7 @@ async def view_shared_chat(request: Request, share_id: str):
                 "request": request,
                 "title": title,
                 "messages": messages,
-                "created_at": ist_time,
+                "created_at": created_at,
                 "share_id": share_id
             }
         )
