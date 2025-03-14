@@ -5,9 +5,10 @@ After=network.target
 [Service]
 User=www-data
 Group=www-data
-WorkingDirectory=/var/python/finnews/finnews
+WorkingDirectory=/var/python/finnews/finnews-ai
 Environment="PATH=/var/python/finnews/venv/bin"
-ExecStart=/var/python/finnews/venv/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind unix:/var/python/finnews/finnews.sock
+Environment="OPENAI_API_KEY=${OPENAI_API_KEY}"
+ExecStart=/var/python/finnews/venv/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind unix:/var/python/finnews/finnews-ai.sock
 Restart=always
 RestartSec=5
 SyslogIdentifier=finnews

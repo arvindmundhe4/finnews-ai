@@ -66,16 +66,36 @@ source $VENV_PATH/bin/activate
 
 # Install Python dependencies
 echo -e "${YELLOW}Installing Python dependencies...${NC}"
-cd $INSTALL_PATH/finnews
+cd $INSTALL_PATH/finnews-ai
 pip install --upgrade pip
 pip install -r requirements.txt
 pip install gunicorn
 
 # Create .env file
 echo -e "${YELLOW}Creating environment file...${NC}"
-cat > $INSTALL_PATH/finnews/.env << EOL
+cat > $INSTALL_PATH/finnews-ai/.env << EOL
 OPENAI_API_KEY=${OPENAI_API_KEY}
-DATABASE_URL=sqlite://${INSTALL_PATH}/finnews/database.sqlite
+DATABASE_URL=sqlite://${INSTALL_PATH}/finnews-ai/database.sqlite
+
+# Application Configuration
+# Use this to specify the base URL for your application when deployed
+# This is particularly important for features like sharing that construct URLs
+APP_BASE_URL=https://${DOMAIN}
+
+# OpenAI Model Configuration
+OPENAI_SEARCH_MODEL=gpt-4o-search-preview
+OPENAI_SENTIMENT_MODEL=gpt-4o-mini
+EOL
+
+# Ensure environment file is loaded
+echo -e "${YELLOW}Creating environment loader...${NC}"
+cat > $INSTALL_PATH/finnews-ai/load_env.py << EOL
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 EOL
 
 # Create systemd service file
@@ -91,9 +111,9 @@ After=network.target
 [Service]
 User=www-data
 Group=www-data
-WorkingDirectory=${INSTALL_PATH}/finnews
+WorkingDirectory=${INSTALL_PATH}/finnews-ai
 Environment="PATH=${VENV_PATH}/bin"
-ExecStart=${VENV_PATH}/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind unix:${INSTALL_PATH}/finnews.sock
+ExecStart=${VENV_PATH}/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind unix:${INSTALL_PATH}/finnews-ai.sock
 Restart=always
 RestartSec=5
 SyslogIdentifier=finnews
@@ -113,7 +133,7 @@ server {
     server_name ${DOMAIN};
 
     location / {
-        proxy_pass http://unix:${INSTALL_PATH}/finnews.sock;
+        proxy_pass http://unix:${INSTALL_PATH}/finnews-ai.sock;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
