@@ -1,7 +1,7 @@
 from typing import Dict, Any
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 
 from fastapi import APIRouter, Request
@@ -78,13 +78,17 @@ async def view_shared_chat(request: Request, share_id: str):
         title = shared_chat.title
         created_at = shared_chat.created_at
         
+        # Format the date in IST timezone (UTC+5:30)
+        ist_offset = timedelta(hours=5, minutes=30)
+        ist_time = created_at + ist_offset
+        
         return templates.TemplateResponse(
             "shared_chat.html",
             {
                 "request": request,
                 "title": title,
                 "messages": messages,
-                "created_at": created_at,
+                "created_at": ist_time,
                 "share_id": share_id
             }
         )
