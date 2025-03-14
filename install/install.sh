@@ -79,7 +79,10 @@ DATABASE_URL=sqlite://${INSTALL_PATH}/finnews/database.sqlite
 EOL
 
 # Create systemd service file
-echo -e "${YELLOW}Creating systemd service...${NC}"
+echo -e "${YELLOW}Creating/updating systemd service...${NC}"
+if [ -f "/etc/systemd/system/finnews.service" ]; then
+    echo -e "${YELLOW}Existing systemd service found. Overwriting...${NC}"
+fi
 cat > /etc/systemd/system/finnews.service << EOL
 [Unit]
 Description=FinNews AI Service
@@ -90,7 +93,7 @@ User=www-data
 Group=www-data
 WorkingDirectory=${INSTALL_PATH}/finnews
 Environment="PATH=${VENV_PATH}/bin"
-ExecStart=${VENV_PATH}/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker -b 127.0.0.1:8000
+ExecStart=${VENV_PATH}/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind unix:${INSTALL_PATH}/finnews.sock
 Restart=always
 RestartSec=5
 SyslogIdentifier=finnews
@@ -100,14 +103,17 @@ WantedBy=multi-user.target
 EOL
 
 # Create Nginx configuration
-echo -e "${YELLOW}Creating Nginx configuration...${NC}"
+echo -e "${YELLOW}Creating/updating Nginx configuration...${NC}"
+if [ -f "/etc/nginx/sites-available/finnews" ]; then
+    echo -e "${YELLOW}Existing Nginx configuration found. Overwriting...${NC}"
+fi
 cat > /etc/nginx/sites-available/finnews << EOL
 server {
     listen 80;
     server_name ${DOMAIN};
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://unix:${INSTALL_PATH}/finnews.sock;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
