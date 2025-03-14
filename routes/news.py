@@ -6,6 +6,10 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create router
 router = APIRouter()
@@ -16,7 +20,7 @@ limiter = Limiter(key_func=get_remote_address)
 # Get model names from environment variables
 SEARCH_MODEL = os.getenv("OPENAI_SEARCH_MODEL", "gpt-4o-mini-search-preview")
 SENTIMENT_MODEL = os.getenv("OPENAI_SENTIMENT_MODEL", "gpt-4o-mini")
-
+API_KEY = os.getenv("OPENAI_API_KEY")
 
 @router.post("/api/get_news")
 @limiter.limit("10 per minute")
@@ -49,8 +53,8 @@ async def get_news(request: Request, data: Dict[str, Any]):
         
         user_message = f"Please provide financial news about: {query}. {detail_level}"
         
-        # Call the API with a simpler parameter set
-        client = openai.OpenAI()
+        # Call the API with a simpler parameter set and explicit API key
+        client = openai.OpenAI(api_key=API_KEY)
         response = client.chat.completions.create(
             model=SEARCH_MODEL,
             messages=[
@@ -122,7 +126,7 @@ async def perform_sentiment_analysis(content: str, query: str):
         """
         
         # Call OpenAI API for sentiment analysis
-        client = openai.OpenAI()
+        client = openai.OpenAI(api_key=API_KEY)
         completion = client.chat.completions.create(
             model=SENTIMENT_MODEL,
             messages=[
