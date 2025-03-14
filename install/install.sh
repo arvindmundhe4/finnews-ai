@@ -75,7 +75,7 @@ pip install gunicorn
 echo -e "${YELLOW}Creating environment file...${NC}"
 cat > $INSTALL_PATH/finnews-ai/.env << EOL
 OPENAI_API_KEY=${OPENAI_API_KEY}
-DATABASE_URL=sqlite://${INSTALL_PATH}/finnews-ai/database.sqlite
+DATABASE_URL=sqlite://database.sqlite
 
 # Application Configuration
 # Use this to specify the base URL for your application when deployed
@@ -103,6 +103,10 @@ echo -e "${YELLOW}Creating/updating systemd service...${NC}"
 if [ -f "/etc/systemd/system/finnews.service" ]; then
     echo -e "${YELLOW}Existing systemd service found. Overwriting...${NC}"
 fi
+
+# Read environment variables from .env file
+echo -e "${YELLOW}Setting up environment variables for service...${NC}"
+
 cat > /etc/systemd/system/finnews.service << EOL
 [Unit]
 Description=FinNews AI Service
@@ -113,6 +117,11 @@ User=www-data
 Group=www-data
 WorkingDirectory=${INSTALL_PATH}/finnews-ai
 Environment="PATH=${VENV_PATH}/bin"
+Environment="OPENAI_API_KEY=${OPENAI_API_KEY}"
+Environment="APP_BASE_URL=https://${DOMAIN}"
+Environment="DATABASE_URL=sqlite://database.sqlite"
+Environment="OPENAI_SEARCH_MODEL=gpt-4o-search-preview"
+Environment="OPENAI_SENTIMENT_MODEL=gpt-4o-mini"
 ExecStart=${VENV_PATH}/bin/gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker --bind unix:${INSTALL_PATH}/finnews-ai.sock
 Restart=always
 RestartSec=5
