@@ -30,7 +30,7 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 async def get_news(request: Request, data: Dict[str, Any]):
     """Get financial news based on query."""
     query = data.get('query', '')
-    search_depth = data.get('search_depth', 'high')
+    search_depth = data.get('search_depth', 'medium')
     
     # Check if query is provided
     if not query:
@@ -189,7 +189,7 @@ def format_response(query: str, content: str, citations: List[Dict[str, str]], s
         return f"I couldn't find any recent financial news related to '{query}'. Please try a different query or check back later."
     
     # Format news results with proper markdown instead of HTML tags
-    response = f"## Financial News for: {query}\n\n"
+    response = f"## **Financial News for: {query}**\n\n"
     
     # Highlight citations in the content
     citation_pattern = r'\[Source: (.*?) \((https?://[^\s\)]+)\)\]'
@@ -260,13 +260,13 @@ def format_response(query: str, content: str, citations: List[Dict[str, str]], s
 @router.post("/api/stream_news")
 @router.get("/api/stream_news")
 @limiter.limit("10 per minute")
-async def stream_news(request: Request, query: str = None, search_depth: str = "high"):
+async def stream_news(request: Request, query: str = None, search_depth: str = "medium"):
     """Stream financial news based on query using Server-Sent Events."""
     # For POST requests, data comes from the request body
     if request.method == "POST":
         data = await request.json()
         query = data.get('query', '')
-        search_depth = data.get('search_depth', 'high')
+        search_depth = data.get('search_depth', 'medium')
     # For GET requests, data comes from query parameters (already captured in function parameters)
     
     # Check if query is provided
@@ -279,40 +279,39 @@ async def stream_news(request: Request, query: str = None, search_depth: str = "
     async def event_generator():
         try:
             # Step 1: Prepare system message for the financial news
-            system_message = (
-                "You are FinNews AI, a sophisticated financial news analyst specializing in providing accurate, "
-                "up-to-date information about global markets, stocks, cryptocurrencies, and economic trends. "
-                "\n\n"
-                "GUIDELINES:\n"
-                "1. Always prioritize recent, factual information from reputable financial sources.\n"
-                "2. Provide balanced perspectives, acknowledging both bullish and bearish viewpoints when relevant.\n"
-                "3. Avoid speculation and clearly distinguish between facts and expert opinions.\n"
-                "4. Use precise financial terminology appropriate for the user's query.\n"
-                "5. Include relevant quantitative data (e.g., price movements, percentages, market cap changes).\n"
-                "6. Structure your response with clear sections and bullet points for readability.\n"
-                "7. For technical queries, explain concepts in accessible language.\n"
-                "\n\n"
-                "SOURCES:\n"
-                "- Always cite your sources using the format [Source: Title (URL)] immediately after the information.\n"
-                "- Include publication dates when available to establish recency.\n"
-                "\n\n"
-                "Remember that users rely on this information for financial awareness, so accuracy and clarity are paramount."
-            )
+            system_message = """
+            You are FinNews AI, a sophisticated financial news analyst specializing in global market trends and insights.
+            
+            TASK:
+            Generate comprehensive, high-quality financial news and analysis on the given topic.
+            
+            FORMAT:
+            - DO NOT include any title or heading at the beginning of your response
+            - Start with a brief introduction summarizing key points
+            - Organize information into clearly numbered sections with descriptive headings
+            - Include relevant data points, trends, and expert opinions
+            - Include links to reputable financial sources in parentheses (e.g., reuters.com, bloomberg.com)
+            - Maintain a professional, objective tone
+            - Your analysis should be data-driven, balanced, and insightful
+            """
             
             # Adjust the prompt based on search depth
             detail_level = {
-                "low": "Provide a brief overview with 3 key points.",
-                "medium": "Provide a balanced analysis with 5 key points.",
-                "high": "Provide a comprehensive analysis with 10 key points and detailed information."
-            }.get(search_depth, "Provide a balanced analysis with 4-6 key points.")
+                "low": "Provide a brief overview with 3-5 key points.",
+                "medium": "Provide a standard analysis with 5-7 key insights.",
+                "high": "Provide a comprehensive analysis with 7-10 key insights, including technical details where relevant."
+            }.get(search_depth, "Provide a standard analysis with 5-7 key insights.")
             
             user_message = f"Please provide financial news about: {query}. {detail_level}"
             
             # Send initial message to indicate the start of streaming
-            yield f"data: {json.dumps({'type': 'start', 'content': f'## Financial News for: {query}\n\n'})}\n\n"
+            yield f"data: {json.dumps({'type': 'start', 'content': f'## **Financial News for: {query}**\n\n'})}\n\n"
             
             # Stream the OpenAI response
             # Use AsyncOpenAI client
+            title_sent = False
+            collected_text = ""
+            
             async with httpx.AsyncClient() as http_client:
                 client = openai.AsyncOpenAI(api_key=API_KEY, http_client=http_client)
                 
@@ -331,73 +330,80 @@ async def stream_news(request: Request, query: str = None, search_depth: str = "
                         content_delta = chunk.choices[0].delta.content
                         if content_delta:
                             full_content += content_delta
+                            
+                            # Skip any duplicated headline that might appear in the model output
+                            if not title_sent:
+                                if "Financial News for:" in content_delta:
+                                    # Skip this as we've already sent the title
+                                    continue
+                            
                             yield f"data: {json.dumps({'type': 'content', 'content': content_delta})}\n\n"
                 
-            # Process sources/citations from content
-            citation_pattern = r'\[Source: (.*?) \((https?://[^\s\)]+)\)\]'
-            citations_found = re.findall(citation_pattern, full_content)
-            
-            citations = [{"title": title, "url": url} for title, url in citations_found]
-            
-            # Format citations in the content
-            citation_replaced_content = re.sub(
-                citation_pattern,
-                r'<a href="\2" class="citation" target="_blank">[Source: \1]</a>',
-                full_content
-            )
-            
-            # Send a message indicating we're performing sentiment analysis
-            yield f"data: {json.dumps({'type': 'loading_sentiment', 'content': '\n\n### Sentiment Analysis (calculating...)\n\n'})}\n\n"
-            
-            # Perform sentiment analysis
-            # Create prompt for sentiment analysis
-            system_prompt = """
-            You are FinNews AI's sentiment analysis engine, a sophisticated financial analyst specializing in market sentiment evaluation.
-            
-            TASK:
-            Analyze the provided financial news and generate a comprehensive sentiment analysis table with precision and nuance.
-            
-            FORMAT:
-            Present your results in a clean, well-formatted table with these columns:
-            | Date | News | Score |
-            
-            The Score column should use a scale from -10 (extremely negative) to +10 (extremely positive).
-            
-            Add an "Overall Sentiment Score" after the table summarizing the collective sentiment.
-            """
-            
-            user_prompt = f"""
-            FINANCIAL NEWS TO ANALYZE:
-            {full_content}
-            
-            USER QUERY:
-            {query}
-            
-            Provide a sentiment analysis table for this financial news, focusing on aspects relevant to the user's query.
-            """
-            
-            # Call OpenAI API for sentiment analysis
-            async with httpx.AsyncClient() as http_client:
-                client = openai.AsyncOpenAI(api_key=API_KEY, http_client=http_client)
-                sentiment_response = await client.chat.completions.create(
-                    model=SENTIMENT_MODEL,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
-                    temperature=0.3,
-                    max_tokens=1200
+                # Process sources/citations from content
+                citation_pattern = r'\[Source: (.*?) \((https?://[^\s\)]+)\)\]'
+                citations_found = re.findall(citation_pattern, full_content)
+                
+                citations = [{"title": title, "url": url} for title, url in citations_found]
+                
+                # Format citations in the content
+                citation_replaced_content = re.sub(
+                    citation_pattern,
+                    r'<a href="\2" class="citation" target="_blank">[Source: \1]</a>',
+                    full_content
                 )
                 
-                # Extract sentiment analysis
-                sentiment_analysis = sentiment_response.choices[0].message.content
+                # Send a message indicating we're performing sentiment analysis
+                yield f"data: {json.dumps({'type': 'loading_sentiment', 'content': '\n\n### Sentiment Analysis (calculating...)\n\n'})}\n\n"
                 
-                # Send the sentiment analysis in one chunk
-                yield f"data: {json.dumps({'type': 'sentiment', 'content': '\n\n### Sentiment Analysis\n\n' + sentiment_analysis})}\n\n"
-            
-            # Send completion signal
-            yield f"data: {json.dumps({'content': '[DONE]'})}\n\n"
+                # Perform sentiment analysis
+                # Create prompt for sentiment analysis
+                system_prompt = """
+                You are FinNews AI's sentiment analysis engine, a sophisticated financial analyst specializing in market sentiment evaluation.
                 
+                TASK:
+                Analyze the provided financial news and generate a comprehensive sentiment analysis table with precision and nuance.
+                
+                FORMAT:
+                Present your results in a clean, well-formatted table with these columns:
+                | Date | News | Score |
+                
+                The Score column should use a scale from -10 (extremely negative) to +10 (extremely positive).
+                
+                Add an "Overall Sentiment Score" after the table summarizing the collective sentiment.
+                """
+                
+                user_prompt = f"""
+                FINANCIAL NEWS TO ANALYZE:
+                {full_content}
+                
+                USER QUERY:
+                {query}
+                
+                Provide a sentiment analysis table for this financial news, focusing on aspects relevant to the user's query.
+                """
+                
+                # Call OpenAI API for sentiment analysis
+                async with httpx.AsyncClient() as http_client:
+                    client = openai.AsyncOpenAI(api_key=API_KEY, http_client=http_client)
+                    sentiment_response = await client.chat.completions.create(
+                        model=SENTIMENT_MODEL,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt}
+                        ],
+                        temperature=0.3,
+                        max_tokens=1200
+                    )
+                    
+                    # Extract sentiment analysis
+                    sentiment_analysis = sentiment_response.choices[0].message.content
+                    
+                    # Send the sentiment analysis in one chunk
+                    yield f"data: {json.dumps({'type': 'sentiment', 'content': '\n\n### Sentiment Analysis\n\n' + sentiment_analysis})}\n\n"
+                
+                # Send completion signal
+                yield f"data: {json.dumps({'content': '[DONE]'})}\n\n"
+                    
         except Exception as e:
             import traceback
             traceback.print_exc()
