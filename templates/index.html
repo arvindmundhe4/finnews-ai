@@ -495,69 +495,73 @@
 
 <!-- Share Dialog -->
 <div id="share-dialog" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div class="absolute inset-0 bg-black/70" id="share-dialog-overlay"></div>
-    <div class="relative bg-neutral-800 rounded-lg shadow-xl max-w-md w-full p-6 transform transition-all">
-        <h3 class="text-xl font-medium text-white mb-4">Share Conversation</h3>
-        <p class="text-gray-300 mb-4">Share this conversation with others:</p>
+    <div class="absolute inset-0 bg-black/80" id="share-dialog-overlay"></div>
+    <div class="relative bg-base-300 rounded-lg shadow-2xl max-w-md w-full p-6 transform transition-all border border-base-content/10">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-medium text-base-content">Share Conversation</h3>
+            <button id="close-share-dialog" class="text-base-content/60 hover:text-base-content transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <p class="text-base-content/80 mb-6">Share this conversation with others:</p>
         
         <!-- Loading state -->
-        <div id="share-loader" class="hidden py-4 flex justify-center items-center">
+        <div id="share-loader" class="hidden py-8 flex justify-center items-center">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
         </div>
         
         <!-- Error message -->
-        <div id="share-error" class="hidden bg-error/20 text-error p-3 rounded mb-4"></div>
+        <div id="share-error" class="hidden bg-error/20 text-error p-4 rounded-lg mb-4 text-sm"></div>
         
         <!-- Share button -->
-        <div id="share-button-dialog" class="mb-4">
-            <button class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">
-                Generate Shareable Link
+        <div id="share-button-dialog" class="mb-6">
+            <button class="w-full px-4 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                <span>Generate Shareable Link</span>
             </button>
         </div>
         
         <!-- Share URL container -->
-        <div id="share-url-container" class="flex flex-col space-y-4 mb-4 hidden">
+        <div id="share-url-container" class="flex flex-col space-y-4 mb-6 hidden">
             <div class="flex items-center relative">
-                <input id="share-url" type="text" class="flex-grow bg-neutral-700 border border-gray-700 text-white px-4 py-3 rounded-md w-full pr-20" readonly>
-                <button id="share-copy" class="absolute right-2 px-4 py-1.5 bg-accent hover:bg-accent/80 text-white rounded-md transition-colors shadow-sm">
+                <input id="share-url" type="text" class="flex-grow bg-base-200 border border-base-content/10 text-base-content px-4 py-3 rounded-lg w-full pr-24" readonly>
+                <button id="share-copy" class="absolute right-2 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors duration-200 text-sm font-medium">
                     Copy
                 </button>
             </div>
-            <p class="text-sm text-gray-400">Anyone with this link can view this conversation</p>
+            <p class="text-sm text-base-content/60">Anyone with this link can view this conversation</p>
             
             <!-- Social Media Sharing Buttons -->
             <div class="flex justify-center space-x-4 mt-2">
                 <!-- LinkedIn -->
-                <button id="share-linkedin" class="social-btn bg-[#0077B5]/20 hover:bg-[#0077B5]/40 text-white p-2 rounded transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <button id="share-linkedin" class="social-btn bg-[#0077B5]/10 hover:bg-[#0077B5]/20 text-[#0077B5] p-2.5 rounded-lg transition-all duration-200 hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                     </svg>
                 </button>
                 <!-- Facebook -->
-                <button id="share-facebook" class="social-btn bg-[#1877F2]/20 hover:bg-[#1877F2]/40 text-white p-2 rounded transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <button id="share-facebook" class="social-btn bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] p-2.5 rounded-lg transition-all duration-200 hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M9 8h-3v4h3v12h5v-12h3v-4h-3v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
                     </svg>
                 </button>
                 <!-- Reddit -->
-                <button id="share-reddit" class="social-btn bg-[#FF4500]/20 hover:bg-[#FF4500]/40 text-white p-2 rounded transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <button id="share-reddit" class="social-btn bg-[#FF4500]/10 hover:bg-[#FF4500]/20 text-[#FF4500] p-2.5 rounded-lg transition-all duration-200 hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M24 11.779c0-1.459-1.192-2.645-2.657-2.645-.715 0-1.363.286-1.84.746-1.81-1.191-4.259-1.949-6.971-2.046l1.483-4.669 4.016.941-.006.058c0 1.193.975 2.163 2.174 2.163 1.198 0 2.172-.97 2.172-2.163s-.975-2.164-2.172-2.164c-.92 0-1.704.574-2.021 1.379l-4.329-1.015c-.189-.046-.381.063-.44.249l-1.654 5.207c-2.838.034-5.409.798-7.3 2.025-.474-.438-1.103-.712-1.799-.712-1.465 0-2.656 1.187-2.656 2.646 0 .97.533 1.811 1.317 2.271-.052.282-.086.567-.086.857 0 3.911 4.808 7.093 10.719 7.093s10.72-3.182 10.72-7.093c0-.274-.029-.544-.075-.81.832-.447 1.405-1.312 1.405-2.318zm-17.224 1.816c0-.868.71-1.575 1.582-1.575.872 0 1.581.707 1.581 1.575s-.709 1.574-1.581 1.574-1.582-.706-1.582-1.574zm9.061 4.669c-.797.793-2.048 1.179-3.824 1.179l-.013-.003-.013.003c-1.777 0-3.028-.386-3.824-1.179-.145-.144-.145-.379 0-.523.145-.145.381-.145.526 0 .65.647 1.729.961 3.298.961l.013.003.013-.003c1.569 0 2.648-.315 3.298-.962.145-.145.381-.144.526 0 .145.145.145.379 0 .524zm-.189-3.095c-.872 0-1.581-.706-1.581-1.574 0-.868.709-1.575 1.581-1.575s1.581.707 1.581 1.575-.709 1.574-1.581 1.574z"/>
                     </svg>
                 </button>
                 <!-- X (Twitter) -->
-                <button id="share-twitter" class="social-btn bg-[#000000]/20 hover:bg-[#000000]/40 text-white p-2 rounded transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <button id="share-twitter" class="social-btn bg-base-content/10 hover:bg-base-content/20 text-base-content p-2.5 rounded-lg transition-all duration-200 hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
                 </button>
             </div>
-        </div>
-        
-        <div class="flex space-x-3 justify-end">
-            <button id="close-share-dialog" class="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-600 transition-colors">
-                Close
-            </button>
         </div>
     </div>
 </div>
@@ -943,7 +947,7 @@
             messageContainer.id = messageId;
             messageContainer.innerHTML = `
                 <div class="flex-shrink-0 h-8 w-8 bg-primary mr-3 rounded-sm flex items-center justify-center">AI</div>
-                <div id="${messageId}-content" class="message-content bg-neutral text-gray-200 markdown-content prose prose-sm prose-invert max-w-none p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
+                <div id="${messageId}-content" class="message-content bg-base-300 text-gray-200 markdown-content prose prose-sm prose-invert max-w-none p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
                 </div>
             `;
             
@@ -1062,7 +1066,7 @@
             avatar.textContent = role === 'user' ? 'U' : 'F';
             
             const messageContent = document.createElement('div');
-            messageContent.className = `message-content ${role === 'user' ? 'bg-primary text-white' : 'bg-neutral text-gray-200'} p-4 md:p-5 rounded-lg max-w-[85%] shadow-md ${role === 'assistant' ? 'markdown-content' : ''}`;
+            messageContent.className = `message-content ${role === 'user' ? 'bg-primary text-white' : 'bg-base-300 text-gray-200'} p-4 md:p-5 rounded-lg max-w-[85%] shadow-md ${role === 'assistant' ? 'markdown-content' : ''}`;
             
             if (role === 'assistant') {
                 try {
