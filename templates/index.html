@@ -4,6 +4,256 @@
 
 {% block head %}
 <!-- Any additional head content specific to this page -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: #0F1117;
+        color: #E2E8F0;
+    }
+    
+    /* Improved readability for prose content */
+    .prose {
+        line-height: 1.7;
+        font-size: 1rem;
+        letter-spacing: 0.01em;
+    }
+    
+    .prose h2 {
+        margin-top: 2rem;
+        margin-bottom: 1.25rem;
+        font-size: 1.6rem;
+        color: #60A5FA;
+        border-bottom: 1px solid #2D3748;
+        padding-bottom: 0.75rem;
+    }
+    
+    .prose h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        color: #A5B4FC;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #2D3748;
+    }
+    
+    /* Sentiment Analysis section styling */
+    .sentiment-heading {
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #60A5FA;
+        text-align: center;
+        padding: 0.75rem;
+        background-color: #1F2937;
+        border-radius: 0.5rem;
+        border-bottom: 3px solid #3B82F6;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Improved paragraph spacing */
+    .prose p {
+        margin-top: 0.75rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.8;
+    }
+    
+    /* Numbered list items styling */
+    .prose p strong {
+        font-size: 1.1rem;
+        color: #60A5FA;
+    }
+    
+    .prose p:has(strong) {
+        margin-top: 1.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    /* Better list spacing */
+    .prose ul, .prose ol {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+        padding-left: 1.75rem;
+    }
+    
+    .prose li {
+        margin-bottom: 0.75rem;
+        padding-left: 0.5rem;
+    }
+    
+    /* Enhanced citation link styling */
+    .prose a.citation, .prose a {
+        color: #F59E0B;
+        text-decoration: none;
+        border-bottom: 1px dotted #F59E0B;
+        transition: all 0.2s ease;
+        padding-bottom: 0.1rem;
+    }
+    
+    .prose a.citation:hover, .prose a:hover {
+        color: #FBBF24;
+        border-bottom: 1px solid #FBBF24;
+    }
+    
+    /* Specific styling for citation links in parentheses */
+    .prose .citation-link {
+        color: #F59E0B;
+        font-weight: 500;
+        text-decoration: none;
+        border-bottom: 1px dotted #F59E0B;
+        transition: all 0.2s ease;
+        padding: 0 0.15rem;
+    }
+    
+    .prose .citation-link:hover {
+        color: #FBBF24;
+        border-bottom: 1px solid #FBBF24;
+        background-color: rgba(245, 158, 11, 0.1);
+    }
+    
+    /* Enhanced table styling */
+    .prose table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 2rem 0;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+    }
+    
+    .prose table thead {
+        background-color: #2563EB;
+    }
+    
+    .prose table th {
+        background-color: #2563EB;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border: 1px solid #1E40AF;
+    }
+    
+    .prose table th:first-child {
+        width: 20%;
+    }
+    
+    .prose table th:nth-child(2) {
+        width: 60%;
+    }
+    
+    .prose table th:last-child {
+        width: 20%;
+        text-align: center;
+    }
+    
+    .prose table td {
+        padding: 0.75rem 1rem;
+        border: 1px solid #4B5563;
+        vertical-align: top;
+    }
+    
+    .prose table td:first-child {
+        width: 20%;
+    }
+    
+    .prose table td:nth-child(2) {
+        width: 60%;
+    }
+    
+    .prose table td:last-child {
+        width: 20%;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    
+    .prose table tr:nth-child(odd) {
+        background-color: #1F2937;
+    }
+    
+    .prose table tr:nth-child(even) {
+        background-color: #111827;
+    }
+    
+    /* Fix table display */
+    .prose table {
+        display: table;
+        max-width: 100%;
+    }
+    
+    /* Score color highlighting */
+    .prose td:last-child {
+        text-align: center;
+    }
+    
+    .positive-score {
+        color: #10B981 !important; /* Green for positive */
+    }
+    
+    .negative-score {
+        color: #EF4444 !important; /* Red for negative */
+    }
+    
+    /* Section styling for numbered points */
+    .prose p em {
+        font-style: normal;
+        color: #D1D5DB;
+    }
+    
+    .section-title {
+        display: block;
+        background-color: rgba(96, 165, 250, 0.1);
+        padding: 0.6rem 0.8rem;
+        border-radius: 0.4rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid #60A5FA;
+        font-size: 1.1rem;
+    }
+    
+    /* Overall score styling */
+    .prose p:contains("Overall Sentiment Score") {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #1E3A8A;
+        border-radius: 0.5rem;
+        border-left: 4px solid #3B82F6;
+        text-align: center;
+    }
+    
+    /* Sentiment Analysis heading */
+    .prose p:has(strong:contains("Sentiment Analysis")) {
+        font-size: 1.4rem;
+        color: #60A5FA;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #2D3748;
+    }
+    
+    /* Constrain assistant message width to match welcome message */
+    .chat-message.assistant .prose {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .chat-message.assistant .flex-1 {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    /* Recent developments section */
+    .prose h3 + p {
+        margin-top: 1rem;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -32,7 +282,7 @@
                     <div class="space-y-1.5">
                         <button class="example-query w-full text-left px-3 py-2 rounded text-sm hover:bg-accent transition-colors duration-200 bg-neutral-800 dark:text-gray-200 text-base-content" data-query="Nifty 50 performance today">Nifty 50 performance today</button>
                         <button class="example-query w-full text-left px-3 py-2 rounded text-sm hover:bg-accent transition-colors duration-200 bg-neutral-800 dark:text-gray-200 text-base-content" data-query="Bank Nifty technical outlook">Bank Nifty technical outlook</button>
-                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm hover:bg-accent transition-colors duration-200 bg-neutral-800 dark:text-gray-200 text-base-content" data-query="FII and DII trends in Indian Stock Market (Both Cash and Futures)">FII and DII trends</button>
+                        <button class="example-query w-full text-left px-3 py-2 rounded text-sm hover:bg-accent transition-colors duration-200 bg-neutral-800 dark:text-gray-200 text-base-content" data-query="Latest FII trends in Indian Stock Market (Both Equities and Futures)">Latest FII trends</button>
                         <button class="example-query w-full text-left px-3 py-2 rounded text-sm hover:bg-accent transition-colors duration-200 bg-neutral-800 dark:text-gray-200 text-base-content" data-query="BSE Sensex analysis">BSE Sensex analysis</button>
                     </div>
                 </div>
@@ -250,7 +500,7 @@
                 <!-- Facebook -->
                 <button id="share-facebook" class="social-btn bg-[#1877F2]/20 hover:bg-[#1877F2]/40 text-white p-2 rounded transition-colors duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                        <path d="M9 8h-3v4h3v12h5v-12h3v-4h-3v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
                     </svg>
                 </button>
                 <!-- Reddit -->
@@ -262,7 +512,7 @@
                 <!-- X (Twitter) -->
                 <button id="share-twitter" class="social-btn bg-[#000000]/20 hover:bg-[#000000]/40 text-white p-2 rounded transition-colors duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
                 </button>
             </div>
@@ -276,9 +526,7 @@
     </div>
 </div>
 
-{% endblock %}
-
-{% block scripts %}
+<!-- JavaScript -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const chatForm = document.getElementById('chat-form');
@@ -420,16 +668,27 @@
                         const contentEl = msg.querySelector('.message-content');
                         let content = '';
                         
-                        if (role === 'user') {
-                            content = contentEl.textContent.trim();
-                        } else {
-                            // For assistant messages, try to get the raw markdown content
-                            const markdownEl = contentEl.querySelector('.markdown-rendered');
-                            if (markdownEl) {
-                                content = markdownEl.innerText.trim();
-                            } else {
-                                content = contentEl.textContent.trim();
+                        if (role === 'assistant') {
+                            try {
+                                // First check if marked is available
+                                if (typeof marked === 'undefined') {
+                                    console.error('marked library is not available');
+                                    content = contentEl.textContent;
+                                } else {
+                                    // Use the global processMarkdown function
+                                    const markdownDiv = contentEl.querySelector('.markdown-rendered');
+                                    if (markdownDiv) {
+                                        content = markdownDiv.innerText;
+                                    } else {
+                                        content = contentEl.textContent;
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Error parsing markdown:', error);
+                                content = contentEl.textContent;
                             }
+                        } else {
+                            content = contentEl.textContent;
                         }
                         
                         if (content) {
@@ -495,7 +754,7 @@
             
             // Facebook
             document.getElementById('share-facebook').addEventListener('click', function() {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&title=${title}`, '_blank');
             });
             
             // Reddit
@@ -594,43 +853,110 @@
             // Scroll to bottom of messages
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // Send message to server
-            fetch('/api/get_news', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: query,
-                    search_depth: depth
-                }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            // Create a new message container for the assistant response
+            const messageId = 'msg-' + Date.now();
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'chat-message assistant flex items-start mb-4 animate-fade-in';
+            messageContainer.innerHTML = `
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white mr-3">
+                    <span class="text-sm font-bold">AI</span>
+                </div>
+                <div class="flex-1 p-4 bg-neutral-700/30 rounded-lg">
+                    <div id="${messageId}" class="prose dark:prose-invert max-w-none break-words"></div>
+                </div>
+            `;
+            
+            // Remove loading indicator before adding the new message container
+            removeLoadingIndicator();
+            
+            // Add the message container to the chat
+            chatMessages.appendChild(messageContainer);
+            
+            // Get the message content element
+            const messageContentEl = document.getElementById(messageId);
+            
+            // Initialize content sections
+            let newsContent = '';
+            let sentimentContent = '';
+            
+            // Use Server-Sent Events for streaming
+            const eventSource = new EventSource(`/api/stream_news?query=${encodeURIComponent(query)}&search_depth=${encodeURIComponent(depth)}`);
+            
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.error) {
+                        messageContentEl.innerHTML = `<p>Error: ${data.error}</p>`;
+                        eventSource.close();
+                        return;
+                    }
+                    
+                    if (data.content === '[DONE]') {
+                        // Stream complete
+                        eventSource.close();
+                        return;
+                    }
+                    
+                    const type = data.type || 'content';
+                    
+                    switch (type) {
+                        case 'start':
+                            // Initialize content with header
+                            newsContent = data.content;
+                            break;
+                            
+                        case 'content':
+                            // Append to news content
+                            newsContent += data.content;
+                            break;
+                            
+                        case 'loading_sentiment':
+                            // Add sentiment analysis header
+                            sentimentContent = data.content;
+                            break;
+                            
+                        case 'sentiment':
+                            // Set sentiment content
+                            sentimentContent = data.content;
+                            break;
+                    }
+                    
+                    // Update display with combined content
+                    messageContentEl.innerHTML = marked.parse(newsContent + sentimentContent);
+                    
+                    // Apply styling enhancements to tables and scores
+                    applyTableStyling(messageContentEl);
+                    
+                    // Make links open in new tabs
+                    messageContentEl.querySelectorAll('a').forEach(link => {
+                        link.setAttribute('target', '_blank');
+                        link.setAttribute('rel', 'noopener noreferrer');
+                        
+                        // Apply special styling for citation links in parentheses
+                        const parentText = link.parentNode.textContent;
+                        if (parentText.includes('(') && parentText.includes(')')) {
+                            link.classList.add('citation-link');
+                        }
+                    });
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                } catch (error) {
+                    console.error('Error parsing SSE data:', error, event.data);
                 }
-                return response.json();
-            })
-            .then(data => {
-                // Remove loading indicator
-                removeLoadingIndicator();
-                
-                // Add assistant message to UI
-                addMessageToUI('assistant', data.response);
-                
-                // Scroll to bottom of messages
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                removeLoadingIndicator();
-                
-                // Add error message to UI
-                addMessageToUI('assistant', `<p>Sorry, I'm having trouble connecting to the server. Please try again later.</p><p>Error: ${error.message}</p>`);
-                
-                // Scroll to bottom of messages
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
+            };
+            
+            eventSource.onerror = function(error) {
+                console.error('EventSource error:', error);
+                messageContentEl.innerHTML += `<p>Error: Connection to server failed. Please try again.</p>`;
+                eventSource.close();
+            };
+            
+            // Update conversation history for sharing
+            conversationHistory.push({role: 'user', content: query});
+            // We'll update the assistant's response once streaming is complete
         }
         
         // Add message to UI
@@ -714,6 +1040,167 @@
             if (loadingIndicator) {
                 loadingIndicator.remove();
             }
+        }
+        
+        // Add function to apply custom table styling
+        function applyTableStyling(container) {
+            // Apply styling to tables
+            const tables = container.querySelectorAll('table');
+            tables.forEach(table => {
+                // Force table to use proper display
+                table.style.display = 'table';
+                table.style.width = '100%';
+                table.style.maxWidth = '100%';
+                table.style.borderCollapse = 'separate';
+                table.style.borderSpacing = '0';
+                table.style.margin = '2rem 0';
+                table.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
+                table.style.borderRadius = '8px';
+                table.style.overflow = 'hidden';
+                
+                // Style table headers
+                const headers = table.querySelectorAll('th');
+                headers.forEach(th => {
+                    th.style.backgroundColor = '#2563EB';
+                    th.style.color = 'white';
+                    th.style.fontWeight = '600';
+                    th.style.padding = '0.75rem 1rem';
+                    th.style.textAlign = 'left';
+                    th.style.border = '1px solid #1E40AF';
+                });
+                
+                // Style the Date column
+                const dateHeaders = table.querySelectorAll('th:first-child');
+                dateHeaders.forEach(th => {
+                    th.style.width = '20%';
+                });
+                
+                // Style the News column
+                const newsHeaders = table.querySelectorAll('th:nth-child(2)');
+                newsHeaders.forEach(th => {
+                    th.style.width = '60%';
+                });
+                
+                // Style the Score column
+                const scoreHeaders = table.querySelectorAll('th:last-child');
+                scoreHeaders.forEach(th => {
+                    th.style.width = '20%';
+                    th.style.textAlign = 'center';
+                });
+                
+                // Style table cells
+                const cells = table.querySelectorAll('td');
+                cells.forEach(td => {
+                    td.style.padding = '0.75rem 1rem';
+                    td.style.border = '1px solid #4B5563';
+                    td.style.verticalAlign = 'top';
+                });
+                
+                // Style specific columns
+                const dateCells = table.querySelectorAll('td:first-child');
+                dateCells.forEach(td => {
+                    td.style.width = '20%';
+                });
+                
+                const newsCells = table.querySelectorAll('td:nth-child(2)');
+                newsCells.forEach(td => {
+                    td.style.width = '60%';
+                });
+                
+                // Find all score cells and color them based on value
+                const scoreCells = table.querySelectorAll('td:last-child');
+                scoreCells.forEach(td => {
+                    td.style.width = '20%';
+                    td.style.textAlign = 'center';
+                    td.style.fontWeight = 'bold';
+                    td.style.fontSize = '1.1rem';
+                    
+                    const scoreText = td.textContent.trim();
+                    if (scoreText.includes('-')) {
+                        td.style.color = '#EF4444'; // Red for negative
+                        td.classList.add('negative-score');
+                    } else if (!isNaN(parseFloat(scoreText))) {
+                        td.style.color = '#10B981'; // Green for positive
+                        td.classList.add('positive-score');
+                    }
+                });
+                
+                // Style alternating rows
+                const rows = table.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    if (index % 2 === 1) { // odd rows (excluding header)
+                        row.style.backgroundColor = '#1F2937';
+                    } else if (index > 0) { // even rows (excluding header)
+                        row.style.backgroundColor = '#111827';
+                    }
+                });
+            });
+            
+            // Style Sentiment Analysis headings
+            const sentimentHeadings = container.querySelectorAll('h3');
+            sentimentHeadings.forEach(heading => {
+                if (heading.textContent.includes('Sentiment Analysis')) {
+                    heading.classList.add('sentiment-heading');
+                    heading.style.marginTop = '2.5rem';
+                    heading.style.marginBottom = '1.5rem';
+                    heading.style.fontSize = '1.5rem';
+                    heading.style.fontWeight = '600';
+                    heading.style.color = '#60A5FA';
+                    heading.style.textAlign = 'center';
+                    heading.style.padding = '0.75rem';
+                    heading.style.backgroundColor = '#1F2937';
+                    heading.style.borderRadius = '0.5rem';
+                    heading.style.borderBottom = '3px solid #3B82F6';
+                    heading.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                }
+            });
+            
+            // Enhance all citation links (domain.com) in the text
+            const paragraphs = container.querySelectorAll('p');
+            paragraphs.forEach(p => {
+                // Style citation links in parentheses
+                let content = p.innerHTML;
+                
+                // Find all parenthetical citations (domain.com) and apply styling
+                content = content.replace(/\(([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/g, 
+                    '(<a href="https://$1" class="citation-link" target="_blank" rel="noopener noreferrer">$1</a>)');
+                
+                p.innerHTML = content;
+                
+                // Style Overall Sentiment Score
+                if (p.textContent.includes('Overall Sentiment Score')) {
+                    p.classList.add('overall-score');
+                    p.style.fontWeight = 'bold';
+                    p.style.fontSize = '1.2rem';
+                    p.style.marginTop = '2rem';
+                    p.style.padding = '1rem';
+                    p.style.backgroundColor = '#1E3A8A';
+                    p.style.borderRadius = '0.5rem';
+                    p.style.borderLeft = '4px solid #3B82F6';
+                    p.style.textAlign = 'center';
+                }
+            });
+            
+            // Style numbered sections (1. Title, 2. Title, etc.)
+            paragraphs.forEach(p => {
+                const text = p.innerHTML;
+                // Look for numbered sections like "1. FII Holdings at a Decade Low"
+                if (/^\d+\.\s+<strong>.*<\/strong>/.test(text) || /^\d+\.\s+.*/.test(text)) {
+                    // Apply special styling to the section titles
+                    let newText = text.replace(/^(\d+\.\s+)(.*)/, function(match, number, title) {
+                        return `<span class="section-title">${number}${title}</span>`;
+                    });
+                    p.innerHTML = newText;
+                    p.style.marginTop = '1.75rem';
+                    p.style.fontWeight = '600';
+                }
+            });
+            
+            // Add spacing between paragraphs
+            paragraphs.forEach(p => {
+                p.style.marginBottom = '1.5rem';
+                p.style.lineHeight = '1.8';
+            });
         }
     });
 </script>
