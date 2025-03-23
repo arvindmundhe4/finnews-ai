@@ -320,6 +320,61 @@
             font-size: 1rem;
             line-height: 1.7;
         }
+        
+        /* Custom styles for improved readability on black theme */
+        [data-theme="black"] .prose {
+            color: #e0e0e0;
+        }
+        
+        [data-theme="black"] .prose a {
+            color: #3b82f6;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        
+        [data-theme="black"] .prose a:hover {
+            color: #60a5fa;
+        }
+        
+        [data-theme="black"] .prose strong {
+            color: white;
+            font-weight: 600;
+        }
+        
+        [data-theme="black"] .prose h1, 
+        [data-theme="black"] .prose h2, 
+        [data-theme="black"] .prose h3, 
+        [data-theme="black"] .prose h4 {
+            color: white;
+        }
+        
+        [data-theme="black"] .prose table {
+            border-color: #374151;
+        }
+        
+        [data-theme="black"] .prose thead {
+            border-bottom-color: #374151;
+        }
+        
+        [data-theme="black"] .prose tbody tr {
+            border-bottom-color: #1f2937;
+        }
+        
+        /* Table styling specific to sentiment analysis tables */
+        [data-theme="black"] .prose table th {
+            color: white;
+            background-color: #111827;
+            padding: 0.75rem 1rem;
+        }
+        
+        [data-theme="black"] .prose table td {
+            padding: 0.75rem 1rem;
+            color: #e0e0e0;
+        }
+        
+        [data-theme="black"] .prose table tr:nth-child(even) td {
+            background-color: #111827;
+        }
     </style>
     
     <!-- Favicon -->
@@ -342,15 +397,6 @@
             daisyui: {
                 themes: [
                     {
-                        light: {
-                            primary: "#10a37f",
-                            secondary: "#6B7280",
-                            accent: "#FFFFFF",
-                            neutral: "#F8F8F8",
-                            "base-100": "#FFFFFF",
-                            "base-200": "#F8F8F8",
-                            "base-300": "#EEEEEE",
-                        },
                         dark: {
                             primary: "#10a37f",
                             secondary: "#6B7280",
@@ -359,6 +405,17 @@
                             "base-100": "#111111",
                             "base-200": "#202123",
                             "base-300": "#373737",
+                        },
+                        black: {
+                            primary: "#10a37f",
+                            secondary: "#6B7280",
+                            accent: "#1a1a1a",
+                            neutral: "#0a0a0a",
+                            "base-100": "#000000",
+                            "base-200": "#050505",
+                            "base-300": "#101010",
+                            "base-content": "#e0e0e0",
+                            "neutral-content": "#f5f5f5",
                         },
                     },
                 ],

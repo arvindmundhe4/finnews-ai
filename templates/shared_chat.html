@@ -165,7 +165,7 @@
                             {% if message.role == 'user' %}U{% else %}AI{% endif %}
                         </div>
                         <div class="message-container flex flex-col w-full">
-                            <div class="message-content {% if message.role == 'assistant' %}bg-base-300 text-gray-200 markdown-content prose prose-sm prose-invert max-w-none{% else %}bg-primary text-white{% endif %} p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
+                            <div class="message-content {% if message.role == 'assistant' %}bg-base-300 text-base-content markdown-content prose prose-sm max-w-none{% else %}bg-primary text-white{% endif %} p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
                                 {% if message.role == 'assistant' %}
                                     <!-- Directly render the HTML content without any filtering or processing -->
                                     {{ message.content | safe }}

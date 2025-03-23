@@ -696,13 +696,13 @@
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'black' : 'dark';
             
             html.setAttribute('data-theme', newTheme);
             html.classList.toggle('dark', newTheme === 'dark');
             localStorage.setItem('theme', newTheme);
             
-            const isDark = newTheme === 'dark';
+            const isDark = newTheme === 'black';
             const themeIcon = isDark 
                 ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
                 : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>';
@@ -970,7 +970,7 @@
             messageContainer.id = messageId;
             messageContainer.innerHTML = `
                 <div class="flex-shrink-0 h-8 w-8 bg-primary mr-3 rounded-sm flex items-center justify-center">AI</div>
-                <div id="${messageId}-content" class="message-content bg-base-300 text-gray-200 markdown-content prose prose-sm prose-invert max-w-none p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
+                <div id="${messageId}-content" class="message-content bg-base-300 text-base-content markdown-content prose prose-sm max-w-none p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
                 </div>
             `;
             
@@ -1089,7 +1089,7 @@
             avatar.textContent = role === 'user' ? 'U' : 'F';
             
             const messageContent = document.createElement('div');
-            messageContent.className = `message-content ${role === 'user' ? 'bg-primary text-white' : 'bg-base-300 text-gray-200'} p-4 md:p-5 rounded-lg max-w-[85%] shadow-md ${role === 'assistant' ? 'markdown-content' : ''}`;
+            messageContent.className = `message-content ${role === 'user' ? 'bg-primary text-white' : 'bg-base-300 text-base-content'} p-4 md:p-5 rounded-lg max-w-[85%] shadow-md ${role === 'assistant' ? 'markdown-content' : ''}`;
             
             if (role === 'assistant') {
                 try {
