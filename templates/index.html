@@ -699,23 +699,94 @@
                 
                 let messages = [];
                 
-                document.querySelectorAll('.message.user').forEach(msg => {
-                    const content = msg.querySelector('.message-content')?.textContent.trim() || '';
-                    messages.push({ role: 'user', content });
-                });
+                // If there's an active streaming response, show an error
+                if (currentStreamingMessageId) {
+                    throw new Error('Please wait for the current response to finish before sharing.');
+                }
                 
-                document.querySelectorAll('.message.assistant').forEach(msg => {
-                    const contentHtml = window.fullStreamedContent ? window.fullStreamedContent : msg.querySelector('.message-content')?.innerHTML || '';
-                    messages.push({ role: 'assistant', content: contentHtml });
-                });
+                // Collect messages
+                const messageElements = document.querySelectorAll('.message, .chat-message');
+                console.log(`Found ${messageElements.length} message elements on the page`);
+                
+                for (const msg of messageElements) {
+                    // Skip loading indicator
+                    if (msg.id === 'loading-indicator') continue;
+                    
+                    // Determine if user or assistant message
+                    let role = '';
+                    if (msg.classList.contains('user-message') || msg.classList.contains('user')) {
+                        role = 'user';
+                    } else if (msg.classList.contains('assistant-message') || msg.classList.contains('assistant')) {
+                        role = 'assistant';
+                    } else {
+                        // Try to determine from avatar content
+                        const avatar = msg.querySelector('.flex-shrink-0');
+                        if (avatar) {
+                            const avatarText = avatar.textContent.trim();
+                            if (avatarText === 'U') role = 'user';
+                            else if (avatarText === 'F' || avatarText === 'AI') role = 'assistant';
+                        }
+                    }
+                    
+                    if (!role) {
+                        console.log('Skipping element - could not determine role:', msg);
+                        continue;
+                    }
+                    
+                    let content = '';
+                    
+                    if (role === 'assistant') {
+                        // For assistant messages, get the properly formatted HTML content
+                        const contentEl = msg.querySelector('.message-content');
+                        if (contentEl) {
+                            // Get the full inner HTML with all formatting
+                            content = contentEl.innerHTML || '';
+                            
+                            // If the message is empty, try to get content from the streamed data
+                            if (!content && msg.id && window.fullStreamedContent && window.fullStreamedContent[msg.id]) {
+                                content = window.fullStreamedContent[msg.id].final || 
+                                          window.fullStreamedContent[msg.id].html || 
+                                          window.fullStreamedContent[msg.id].markdown || '';
+                            }
+                        }
+                    } else {
+                        // For user messages, get the text content
+                        const contentEl = msg.querySelector('.message-content');
+                        if (contentEl) {
+                            content = contentEl.textContent.trim() || '';
+                        }
+                    }
+                    
+                    if (content) {
+                        console.log(`Adding ${role} message with content length: ${content.length} characters`);
+                        if (content.length > 200) {
+                            console.log(`Content preview: ${content.substring(0, 200)}...`);
+                        } else {
+                            console.log(`Content: ${content}`);
+                        }
+                        messages.push({ role, content });
+                    }
+                }
                 
                 console.log('Preparing to share content...');
                 console.log('Number of messages:', messages.length);
                 if (messages.length > 0) {
+                    console.log('First message role:', messages[0].role);
                     console.log('First message sample:', messages[0].content.substring(0, 100));
                     if (messages.length > 1) {
+                        console.log('Last message role:', messages[messages.length-1].role);
                         console.log('Last message sample:', messages[messages.length-1].content.substring(0, 100));
                     }
+                }
+                
+                // If no messages were found, show an error
+                if (messages.length === 0) {
+                    throw new Error('No conversation messages found to share');
+                }
+                
+                // If there's no assistant message, show an error
+                if (!messages.some(m => m.role === 'assistant')) {
+                    throw new Error('No assistant responses to share. Please wait for a response before sharing.');
                 }
                 
                 const response = await fetch('/api/share_chat', {
@@ -765,54 +836,46 @@
                 document.getElementById('share-loader').classList.add('hidden');
             }
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const shareButtonDialog = document.getElementById('share-button-dialog');
-            if (shareButtonDialog) {
-                shareButtonDialog.addEventListener('click', function() {
-                    console.log('Share button dialog clicked, generating link...');
-                    generateShareLink();
-                });
-            } else {
-                console.error('Share button dialog element not found!');
-            }
-            
-            const mainShareButton = document.getElementById('share-button');
-            if (mainShareButton) {
-                mainShareButton.addEventListener('click', function() {
-                    console.log('Main share button clicked, opening dialog...');
-                    shareChat();
-                });
-            }
-            
-            const mobileShareButton = document.getElementById('mobile-share-button');
-            if (mobileShareButton) {
-                mobileShareButton.addEventListener('click', function() {
-                    console.log('Mobile share button clicked, opening dialog...');
-                    shareChat();
-                });
-            }
-            
-            const closeShareButton = document.getElementById('close-share-dialog');
-            if (closeShareButton) {
-                closeShareButton.addEventListener('click', function() {
-                    shareDialog.classList.add('hidden');
-                });
-            }
-            
-            const shareDialogOverlay = document.getElementById('share-dialog-overlay');
-            if (shareDialogOverlay) {
-                shareDialogOverlay.addEventListener('click', function() {
-                    shareDialog.classList.add('hidden');
-                });
-            }
-        });
+        
+        const shareButtonDialog = document.getElementById('share-button-dialog');
+        if (shareButtonDialog) {
+            shareButtonDialog.addEventListener('click', function() {
+                console.log('Share button dialog clicked, generating link...');
+                generateShareLink();
+            });
+        } else {
+            console.error('Share button dialog element not found!');
+        }
+        
+        if (shareButton) {
+            shareButton.addEventListener('click', function() {
+                console.log('Main share button clicked, opening dialog...');
+                shareChat();
+            });
+        }
+        
+        if (mobileShareButton) {
+            mobileShareButton.addEventListener('click', function() {
+                console.log('Mobile share button clicked, opening dialog...');
+                shareChat();
+            });
+        }
+        
+        if (closeShareButton) {
+            closeShareButton.addEventListener('click', function() {
+                shareDialog.classList.add('hidden');
+            });
+        }
+        
+        if (shareDialogBackdrop) {
+            shareDialogBackdrop.addEventListener('click', function() {
+                shareDialog.classList.add('hidden');
+            });
+        }
 
         function shareChat() {
-            // Show share dialog
             shareDialog.classList.remove('hidden');
             
-            // Reset UI
             document.getElementById('share-url-container').classList.add('hidden');
             document.getElementById('share-loader').classList.add('hidden');
             document.getElementById('share-button-dialog').classList.remove('hidden');
@@ -915,7 +978,6 @@
                     const data = JSON.parse(event.data);
                     const type = data.type || 'content';
                     
-                    // Capture raw data for sharing before any processing
                     if (currentStreamingMessageId) {
                         switch (type) {
                             case 'start':
@@ -932,11 +994,9 @@
                                 break;
                         }
                         
-                        // Update the combined markdown content
-                        const storedContent = window.fullStreamedContent[currentStreamingMessageId];
-                        storedContent.markdown = storedContent.parts.news + 
-                                               storedContent.parts.sentiment + 
-                                               storedContent.parts.disclaimer;
+                        window.fullStreamedContent[currentStreamingMessageId].markdown = window.fullStreamedContent[currentStreamingMessageId].parts.news + 
+                                               window.fullStreamedContent[currentStreamingMessageId].parts.sentiment + 
+                                               window.fullStreamedContent[currentStreamingMessageId].parts.disclaimer;
                         console.log(`[DEBUG] Updated stored markdown for ${currentStreamingMessageId}`);
                     }
                     
