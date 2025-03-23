@@ -18,7 +18,190 @@
     <!-- Custom styles -->
     <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
     
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* Base styles */
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary-color: #10b981;
+            --accent-color: #8b5cf6;
+            --neutral-color: #1f2937;
+            --base-content: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #0F1117;
+            color: #E2E8F0;
+            line-height: 1.5;
+        }
+        
+        /* Prose styling for Markdown content */
+        .prose {
+            line-height: 1.7;
+            font-size: 1rem;
+            letter-spacing: 0.01em;
+        }
+        
+        .prose h2 {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            color: #60A5FA;
+            border-bottom: 2px solid #3B82F6;
+            padding-bottom: 1rem;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        
+        .prose h2:first-of-type {
+            background: linear-gradient(90deg, #2563EB, #60A5FA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            margin-bottom: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #1E3A8A;
+            border: none;
+        }
+        
+        .prose h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            color: #A5B4FC;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #2D3748;
+        }
+        
+        .prose p {
+            margin-top: 0.75rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .prose ul {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+        }
+        
+        .prose ol {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            list-style-type: decimal;
+        }
+        
+        .prose li {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Table styling */
+        .prose table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .prose th {
+            background-color: #2563EB;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid #1E40AF;
+        }
+        
+        .prose td {
+            padding: 0.75rem 1rem;
+            border: 1px solid #4B5563;
+            vertical-align: top;
+        }
+        
+        .prose tr:nth-child(even) {
+            background-color: #111827;
+        }
+        
+        .prose tr:nth-child(odd):not(:first-child) {
+            background-color: #1F2937;
+        }
+        
+        /* Citation link styling */
+        .citation-link {
+            color: #60A5FA !important;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .citation-link:hover {
+            color: #93C5FD !important;
+            text-decoration: underline;
+        }
+        
+        /* Sentiment styling */
+        .sentiment-heading {
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #60A5FA;
+            text-align: center;
+            padding: 0.75rem;
+            background-color: #1F2937;
+            border-radius: 0.5rem;
+            border-bottom: 3px solid #3B82F6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .positive-score {
+            color: #10B981 !important;
+        }
+        
+        .negative-score {
+            color: #EF4444 !important;
+        }
+        
+        .overall-score {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #1E3A8A;
+            border-radius: 0.5rem;
+            border-left: 4px solid #3B82F6;
+            text-align: center;
+        }
+        
+        /* Disclaimer styling */
+        .disclaimer {
+            margin-top: 2rem;
+            font-style: italic;
+            color: #9CA3AF;
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            border-top: 1px solid #374151;
+            background-color: rgba(31, 41, 55, 0.4);
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
         /* Citation styling */
         .citation {
             background-color: rgba(16, 163, 127, 0.15);

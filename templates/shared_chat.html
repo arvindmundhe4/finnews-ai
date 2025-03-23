@@ -48,9 +48,9 @@
                 {% for message in messages %}
                     <div class="flex items-start {% if message.role == 'user' %}flex-row-reverse{% endif %}">
                         <div class="flex-shrink-0 h-8 w-8 {% if message.role == 'user' %}bg-secondary ml-3{% else %}bg-primary mr-3{% endif %} rounded-sm flex items-center justify-center text-white">
-                            {% if message.role == 'user' %}U{% else %}F{% endif %}
+                            {% if message.role == 'user' %}U{% else %}AI{% endif %}
                         </div>
-                        <div class="message-content {% if message.role == 'assistant' %}bg-neutral text-gray-200 markdown-content{% else %}bg-primary text-white{% endif %} p-3 md:p-5 rounded-lg max-w-[80%] shadow-md">
+                        <div class="message-content {% if message.role == 'assistant' %}bg-neutral text-gray-200 markdown-content prose prose-sm prose-invert max-w-none{% else %}bg-primary text-white{% endif %} p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
                             {% if message.role == 'assistant' %}
                                 <div class="markdown-rendered">{{ message.content | safe }}</div>
                             {% else %}
@@ -90,11 +90,9 @@
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
             document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
             document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
         }
     }
     
@@ -104,29 +102,170 @@
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
         document.documentElement.setAttribute('data-theme', newTheme);
-        document.documentElement.classList.toggle('dark');
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
         localStorage.setItem('theme', newTheme);
+        
+        // Update icon
+        const themeToggleIcon = themeToggle.querySelector('svg');
+        if (newTheme === 'dark') {
+            themeToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
+        } else {
+            themeToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+        }
     }
     
     // Add click event for theme toggle
     themeToggle.addEventListener('click', toggleTheme);
     
-    // Process markdown in all assistant messages to ensure proper rendering
+    // Apply styling to tables when the page loads
     document.addEventListener('DOMContentLoaded', function() {
-        // Re-process all markdown content in shared messages
-        document.querySelectorAll('.markdown-rendered').forEach(element => {
-            try {
-                // Get the current content which might have raw HTML tags
-                const content = element.innerHTML;
+        // Apply table styling to all tables in the markdown content
+        function applyTableStyling() {
+            // Apply styling to tables
+            const tables = document.querySelectorAll('.markdown-rendered table');
+            tables.forEach(table => {
+                // Force table to use proper display
+                table.style.display = 'table';
+                table.style.width = '100%';
+                table.style.maxWidth = '100%';
+                table.style.borderCollapse = 'separate';
+                table.style.borderSpacing = '0';
+                table.style.margin = '2rem 0';
+                table.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
+                table.style.borderRadius = '8px';
+                table.style.overflow = 'hidden';
                 
-                // Process it again to ensure proper rendering
-                if (typeof processMarkdown === 'function') {
-                    element.innerHTML = processMarkdown(content);
+                // Style table headers
+                const headers = table.querySelectorAll('th');
+                headers.forEach(th => {
+                    th.style.backgroundColor = '#2563EB';
+                    th.style.color = 'white';
+                    th.style.fontWeight = '600';
+                    th.style.padding = '0.75rem 1rem';
+                    th.style.textAlign = 'left';
+                    th.style.border = '1px solid #1E40AF';
+                });
+                
+                // Style the Date column
+                const dateHeaders = table.querySelectorAll('th:first-child');
+                dateHeaders.forEach(th => {
+                    th.style.width = '20%';
+                });
+                
+                // Style the News column
+                const newsHeaders = table.querySelectorAll('th:nth-child(2)');
+                newsHeaders.forEach(th => {
+                    th.style.width = '60%';
+                });
+                
+                // Style the Score column
+                const scoreHeaders = table.querySelectorAll('th:last-child');
+                scoreHeaders.forEach(th => {
+                    th.style.width = '20%';
+                    th.style.textAlign = 'center';
+                });
+                
+                // Style table cells
+                const cells = table.querySelectorAll('td');
+                cells.forEach(td => {
+                    td.style.padding = '0.75rem 1rem';
+                    td.style.border = '1px solid #4B5563';
+                    td.style.verticalAlign = 'top';
+                });
+                
+                // Style specific columns
+                const dateCells = table.querySelectorAll('td:first-child');
+                dateCells.forEach(td => {
+                    td.style.width = '20%';
+                });
+                
+                const newsCells = table.querySelectorAll('td:nth-child(2)');
+                newsCells.forEach(td => {
+                    td.style.width = '60%';
+                });
+                
+                // Find all score cells and color them based on value
+                const scoreCells = table.querySelectorAll('td:last-child');
+                scoreCells.forEach(td => {
+                    td.style.width = '20%';
+                    td.style.textAlign = 'center';
+                    td.style.fontWeight = 'bold';
+                    td.style.fontSize = '1.1rem';
+                    
+                    const scoreText = td.textContent.trim();
+                    if (scoreText.includes('-')) {
+                        td.style.color = '#EF4444'; // Red for negative
+                        td.classList.add('negative-score');
+                    } else if (!isNaN(parseFloat(scoreText))) {
+                        td.style.color = '#10B981'; // Green for positive
+                        td.classList.add('positive-score');
+                    }
+                });
+                
+                // Style alternating rows
+                const rows = table.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    if (index % 2 === 1) { // odd rows (excluding header)
+                        row.style.backgroundColor = '#1F2937';
+                    } else if (index > 0) { // even rows (excluding header)
+                        row.style.backgroundColor = '#111827';
+                    }
+                });
+            });
+                
+            // Style Sentiment Analysis headings
+            const sentimentHeadings = document.querySelectorAll('.markdown-rendered h3');
+            sentimentHeadings.forEach(heading => {
+                if (heading.textContent.includes('Sentiment Analysis')) {
+                    heading.classList.add('sentiment-heading');
+                    heading.style.marginTop = '2.5rem';
+                    heading.style.marginBottom = '1.5rem';
+                    heading.style.fontSize = '1.5rem';
+                    heading.style.fontWeight = '600';
+                    heading.style.color = '#60A5FA';
+                    heading.style.textAlign = 'center';
+                    heading.style.padding = '0.75rem';
+                    heading.style.backgroundColor = '#1F2937';
+                    heading.style.borderRadius = '0.5rem';
+                    heading.style.borderBottom = '3px solid #3B82F6';
+                    heading.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
                 }
-            } catch (error) {
-                console.error('Error processing markdown in shared view:', error);
-            }
-        });
+            });
+                
+            // Style citation links
+            document.querySelectorAll('.markdown-rendered a').forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+                
+                // Apply special styling for citation links in parentheses
+                const parentText = link.parentNode.textContent;
+                if (parentText.includes('(') && parentText.includes(')')) {
+                    link.classList.add('citation-link');
+                    link.style.color = '#60A5FA';
+                    link.style.textDecoration = 'none';
+                    link.style.fontWeight = '500';
+                    link.style.transition = 'color 0.2s ease';
+                }
+            });
+                
+            // Style disclaimer
+            document.querySelectorAll('.markdown-rendered p').forEach(p => {
+                if (p.textContent.includes('Note: This information is based on recent financial news')) {
+                    p.classList.add('disclaimer');
+                    p.style.marginTop = '2rem';
+                    p.style.fontStyle = 'italic';
+                    p.style.color = '#9CA3AF';
+                    p.style.fontSize = '0.9rem';
+                    p.style.padding = '0.75rem';
+                    p.style.borderTop = '1px solid #374151';
+                    p.style.backgroundColor = 'rgba(31, 41, 55, 0.4)';
+                    p.style.borderRadius = '0.5rem';
+                    p.style.textAlign = 'center';
+                }
+            });
+        }
+        
+        applyTableStyling();
     });
 </script>
 {% endblock %}

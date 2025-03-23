@@ -211,48 +211,12 @@ def format_response(query: str, content: str, citations: List[Dict[str, str]], s
         
         # Check if it's already in HTML format
         if "<table" not in sentiment_analysis:
-            # Parse the sentiment analysis text to extract structured data
-            # This is a simple implementation and might need adjustment based on actual format
-            lines = sentiment_analysis.strip().split('\n')
-            
-            # Start the HTML table
-            table_html = '<table class="sentiment-table">\n<thead>\n<tr>'
-            table_html += '<th>Entity</th><th>Score</th><th>Explanation</th>'
-            table_html += '</tr>\n</thead>\n<tbody>\n'
-            
-            # Check if the sentiment analysis is already in a table format
-            in_table = False
-            for line in lines:
-                if "Entity" in line and "Score" in line and "Explanation" in line:
-                    in_table = True
-                    continue
-                
-                if in_table and "|" in line and "---" not in line:
-                    cols = line.split("|")
-                    if len(cols) >= 4:  # Account for empty first column in markdown tables
-                        entity = cols[1].strip()
-                        score = cols[2].strip()
-                        explanation = cols[3].strip()
-                        
-                        # Apply color classes based on score value
-                        score_class = "score-neutral"
-                        if score.startswith("+"):
-                            score_class = "score-positive"
-                        elif score.startswith("-"):
-                            score_class = "score-negative"
-                        
-                        table_html += f'<tr>\n  <td>{entity}</td>\n  <td class="{score_class}">{score}</td>\n  <td>{explanation}</td>\n</tr>\n'
-            
-            # Close the table
-            table_html += '</tbody>\n</table>'
-            
-            # Add the HTML table to the response
-            sentiment_analysis = table_html
-        
-        response += sentiment_analysis
+            response += "Here is the sentiment analysis table based on the provided financial news:\n\n" + sentiment_analysis
+        else:
+            response += sentiment_analysis
     
-    # Add disclaimer
-    response += "\n\n---\n*Note: This information is based on recent financial news and may not reflect the most current market conditions.*"
+    # Add disclaimer at the end
+    response += "\n\n---\n\n*Note: This information is based on recent financial news and may not reflect the most current market conditions.*"
     
     return response
 
@@ -400,6 +364,10 @@ async def stream_news(request: Request, query: str = None, search_depth: str = "
                     
                     # Send the sentiment analysis in one chunk
                     yield f"data: {json.dumps({'type': 'sentiment', 'content': '\n\n### Sentiment Analysis\n\n' + sentiment_analysis})}\n\n"
+                
+                # Add disclaimer at the end
+                disclaimer = "\n\n---\n\n*Note: This information is based on recent financial news and may not reflect the most current market conditions.*"
+                yield f"data: {json.dumps({'type': 'disclaimer', 'content': disclaimer})}\n\n"
                 
                 # Send completion signal
                 yield f"data: {json.dumps({'content': '[DONE]'})}\n\n"

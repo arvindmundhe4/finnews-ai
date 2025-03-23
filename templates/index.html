@@ -71,6 +71,19 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
+    /* Disclaimer styling */
+    .disclaimer {
+        margin-top: 2rem;
+        font-style: italic;
+        color: #9CA3AF;
+        font-size: 0.9rem;
+        padding: 0.75rem;
+        border-top: 1px solid #374151;
+        background-color: rgba(31, 41, 55, 0.4);
+        border-radius: 0.5rem;
+        text-align: center;
+    }
+    
     /* Improved paragraph spacing */
     .prose p {
         margin-top: 0.75rem;
@@ -446,6 +459,11 @@
                 
                 <!-- Dynamic Messages Will Be Added Here -->
                 <div id="chat-messages" class="pb-2"></div>
+                
+                <!-- Disclaimer -->
+                <div class="disclaimer">
+                    <p>Disclaimer: The information provided by FinNews AI is for informational purposes only and should not be considered as investment advice. Please do your own research and consult with a financial advisor before making any investment decisions.</p>
+                </div>
             </div>
         </div>
 
@@ -894,8 +912,9 @@
             const messageContentEl = document.getElementById(messageId);
             
             // Initialize content sections
-            let newsContent = '';
-            let sentimentContent = '';
+            let newsContent = "";
+            let sentimentContent = "";
+            let disclaimerContent = "";
             
             // Use Server-Sent Events for streaming
             const eventSource = new EventSource(`/api/stream_news?query=${encodeURIComponent(query)}&search_depth=${encodeURIComponent(depth)}`);
@@ -920,28 +939,29 @@
                     
                     switch (type) {
                         case 'start':
-                            // Initialize content with header
+                            // Initial content
                             newsContent = data.content;
                             break;
-                            
                         case 'content':
                             // Append to news content
                             newsContent += data.content;
                             break;
-                            
                         case 'loading_sentiment':
-                            // Add sentiment analysis header
+                            // Replace existing sentiment content with loading indicator
                             sentimentContent = data.content;
                             break;
-                            
                         case 'sentiment':
                             // Set sentiment content
                             sentimentContent = data.content;
                             break;
+                        case 'disclaimer':
+                            // Add disclaimer content
+                            disclaimerContent = data.content;
+                            break;
                     }
                     
                     // Update display with combined content
-                    messageContentEl.innerHTML = marked.parse(newsContent + sentimentContent);
+                    messageContentEl.innerHTML = marked.parse(newsContent + sentimentContent + disclaimerContent);
                     
                     // Apply styling enhancements to tables and scores
                     applyTableStyling(messageContentEl);
@@ -958,16 +978,26 @@
                         }
                     });
                     
-                    // Scroll to bottom
+                    // If the message is [DONE], close the EventSource and re-enable the input
+                    if (data.content === '[DONE]') {
+                        eventSource.close();
+                        inputEl.disabled = false;
+                        submitBtn.disabled = false;
+                        loadingIndicator.style.display = 'none';
+                        submitBtn.innerText = 'Send';
+                        inputEl.focus();
+                    }
+                    
+                    // Scroll to the bottom of the chat container
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                     
                 } catch (error) {
-                    console.error('Error parsing SSE data:', error, event.data);
+                    console.error("Error parsing event data:", error);
                 }
             };
             
             eventSource.onerror = function(error) {
-                console.error('EventSource error:', error);
+                console.error("EventSource error:", error);
                 messageContentEl.innerHTML += `<p>Error: Connection to server failed. Please try again.</p>`;
                 eventSource.close();
             };
