@@ -398,7 +398,7 @@
         <div id="mobile-menu" class="fixed inset-0 bg-base-200 z-50 flex flex-col hidden">
             <div class="flex justify-between items-center p-4 border-b border-neutral/20 bg-base-300">
                 <div class="font-medium">Menu</div>
-                <button id="close-mobile-menu" class="p-1 rounded hover:bg-primary/10">
+                <button id="close-mobile-menu" class="text-base-content/60 hover:text-base-content transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -408,11 +408,34 @@
                 <!-- Example queries section -->
                 <div class="mb-4">
                     <h4 class="text-xs uppercase text-gray-500 font-medium mb-2">Trader Queries</h4>
-                    <div class="space-y-2">
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="What were the top performing S&P 500 stocks today?">What were the top performing S&P 500 stocks today?</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Summarize the latest Fed meeting minutes">Summarize the latest Fed meeting minutes</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="What factors are driving crude oil prices this week?">What factors are driving crude oil prices this week?</button>
-                        <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Explain the current yield curve and its implications">Explain the current yield curve and its implications</button>
+                    
+                    <!-- Indian Stock Market Queries -->
+                    <div class="mb-3">
+                        <h5 class="text-xs text-gray-500 mb-2">Indian Stock Market</h5>
+                        <div class="space-y-2">
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Nifty 50 performance today">Nifty 50 performance today</button>
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Bank Nifty technical outlook">Bank Nifty technical outlook</button>
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Latest FII trends in Indian Stock Market (Both Equities and Futures)">Latest FII trends</button>
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="BSE Sensex analysis">BSE Sensex analysis</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Indian Stocks Queries -->
+                    <div class="mb-3">
+                        <h5 class="text-xs text-gray-500 mb-2">Indian Stocks</h5>
+                        <div class="space-y-2">
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Reliance Industries stock news">Reliance Industries stock news</button>
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="HDFC Bank quarterly results">HDFC Bank quarterly results</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Indian Economy Queries -->
+                    <div class="mb-3">
+                        <h5 class="text-xs text-gray-500 mb-2">Indian Economy</h5>
+                        <div class="space-y-2">
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="Latest RBI policy impact">Latest RBI policy impact</button>
+                            <button class="mobile-example-query w-full text-left px-3 py-2 rounded bg-base-200 text-base-content" data-query="India GDP growth forecast">India GDP growth forecast</button>
+                        </div>
                     </div>
                 </div>
                 <div class="space-y-2">
