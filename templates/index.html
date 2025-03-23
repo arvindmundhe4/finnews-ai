@@ -586,7 +586,30 @@
         const welcomeScreen = document.querySelector('.welcome-screen');
         const welcomeExampleQueries = document.querySelectorAll('.welcome-example-query');
         const exampleButtons = document.querySelectorAll('.example-query, .mobile-example-query');
+        
+        // Global variables for message tracking and sharing
         let conversationHistory = [];
+        let isStreaming = false;
+        let typingTimer;
+
+        // Store rendered message content for sharing
+        const completeRenderedMessages = {};
+
+        // For streaming content capture and sharing
+        window.fullStreamedContent = {};
+        
+        // Track the current message being streamed
+        let currentStreamingMessageId = null;
+        
+        // Function to capture the complete rendered content
+        function captureRenderedContent(messageEl) {
+            const messageId = messageEl.id;
+            if (messageId) {
+                const clonedContent = messageEl.cloneNode(true);
+                completeRenderedMessages[messageId] = clonedContent.innerHTML;
+                console.log(`[DEBUG] Captured complete rendered content for ${messageId}`);
+            }
+        }
 
         // Set initial textarea height
         chatInput.style.height = (chatInput.scrollHeight) + 'px';
@@ -601,10 +624,8 @@
         chatInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 if (e.shiftKey) {
-                    // Let the newline happen naturally with Shift+Enter
                     return true;
                 } else {
-                    // Prevent default behavior and send message
                     e.preventDefault();
                     sendMessage();
                     return false;
@@ -654,7 +675,6 @@
             html.classList.toggle('dark', newTheme === 'dark');
             localStorage.setItem('theme', newTheme);
             
-            // Update icon
             const isDark = newTheme === 'dark';
             const themeIcon = isDark 
                 ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
@@ -670,12 +690,129 @@
             mobileMenu.classList.add('hidden');
         });
 
-        // Handle share functionality
+        // Share functionality
+        async function generateShareLink() {
+            try {
+                document.getElementById('share-button-dialog').classList.add('hidden');
+                document.getElementById('share-loader').classList.remove('hidden');
+                document.getElementById('share-error').classList.add('hidden');
+                
+                let messages = [];
+                
+                document.querySelectorAll('.message.user').forEach(msg => {
+                    const content = msg.querySelector('.message-content')?.textContent.trim() || '';
+                    messages.push({ role: 'user', content });
+                });
+                
+                document.querySelectorAll('.message.assistant').forEach(msg => {
+                    const contentHtml = window.fullStreamedContent ? window.fullStreamedContent : msg.querySelector('.message-content')?.innerHTML || '';
+                    messages.push({ role: 'assistant', content: contentHtml });
+                });
+                
+                console.log('Preparing to share content...');
+                console.log('Number of messages:', messages.length);
+                if (messages.length > 0) {
+                    console.log('First message sample:', messages[0].content.substring(0, 100));
+                    if (messages.length > 1) {
+                        console.log('Last message sample:', messages[messages.length-1].content.substring(0, 100));
+                    }
+                }
+                
+                const response = await fetch('/api/share_chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: 'FinNews Conversation',
+                        messages: messages
+                    }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.share_id) {
+                    throw new Error('No share ID returned from API');
+                }
+                
+                const shareUrl = `${window.location.origin}/shared/${data.share_id}`;
+                
+                document.getElementById('share-url-container').classList.remove('hidden');
+                document.getElementById('share-url').value = shareUrl;
+                
+                document.getElementById('share-copy').onclick = function() {
+                    const urlInput = document.getElementById('share-url');
+                    urlInput.select();
+                    document.execCommand('copy');
+                    
+                    const copyBtn = document.getElementById('share-copy');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                    }, 2000);
+                };
+                
+                setupSocialShareButtons(shareUrl);
+                
+            } catch (error) {
+                console.error('Error sharing chat:', error);
+                showShareError(error.message || 'Failed to share chat. Please try again.');
+            } finally {
+                document.getElementById('share-loader').classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareButtonDialog = document.getElementById('share-button-dialog');
+            if (shareButtonDialog) {
+                shareButtonDialog.addEventListener('click', function() {
+                    console.log('Share button dialog clicked, generating link...');
+                    generateShareLink();
+                });
+            } else {
+                console.error('Share button dialog element not found!');
+            }
+            
+            const mainShareButton = document.getElementById('share-button');
+            if (mainShareButton) {
+                mainShareButton.addEventListener('click', function() {
+                    console.log('Main share button clicked, opening dialog...');
+                    shareChat();
+                });
+            }
+            
+            const mobileShareButton = document.getElementById('mobile-share-button');
+            if (mobileShareButton) {
+                mobileShareButton.addEventListener('click', function() {
+                    console.log('Mobile share button clicked, opening dialog...');
+                    shareChat();
+                });
+            }
+            
+            const closeShareButton = document.getElementById('close-share-dialog');
+            if (closeShareButton) {
+                closeShareButton.addEventListener('click', function() {
+                    shareDialog.classList.add('hidden');
+                });
+            }
+            
+            const shareDialogOverlay = document.getElementById('share-dialog-overlay');
+            if (shareDialogOverlay) {
+                shareDialogOverlay.addEventListener('click', function() {
+                    shareDialog.classList.add('hidden');
+                });
+            }
+        });
+
         function shareChat() {
             // Show share dialog
             shareDialog.classList.remove('hidden');
             
-            // Reset dialog state
+            // Reset UI
             document.getElementById('share-url-container').classList.add('hidden');
             document.getElementById('share-loader').classList.add('hidden');
             document.getElementById('share-button-dialog').classList.remove('hidden');
@@ -683,122 +820,22 @@
             shareUrlInput.value = '';
         }
 
-        async function generateShareLink() {
-            try {
-                // Show loading state
-                document.getElementById('share-button-dialog').classList.add('hidden');
-                document.getElementById('share-loader').classList.remove('hidden');
-                
-                // Create a safe version of messages to share
-                let messages = [];
-                
-                // First try to use conversationHistory if it's populated
-                if (conversationHistory && conversationHistory.length > 0) {
-                    messages = [...conversationHistory]; // Create a copy
-                } else {
-                    // Fallback: Extract messages from DOM if conversationHistory is empty
-                    const messageElements = chatMessages.querySelectorAll('.message');
-                    
-                    messageElements.forEach(msg => {
-                        const role = msg.classList.contains('user-message') ? 'user' : 'assistant';
-                        const contentEl = msg.querySelector('.message-content');
-                        let content = '';
-                        
-                        if (role === 'assistant') {
-                            try {
-                                // First check if marked is available
-                                if (typeof marked === 'undefined') {
-                                    console.error('marked library is not available');
-                                    content = contentEl.textContent;
-                                } else {
-                                    // Use the global processMarkdown function
-                                    const markdownDiv = contentEl.querySelector('.markdown-rendered');
-                                    if (markdownDiv) {
-                                        content = markdownDiv.innerText;
-                                    } else {
-                                        content = contentEl.textContent;
-                                    }
-                                }
-                            } catch (error) {
-                                console.error('Error parsing markdown:', error);
-                                content = contentEl.textContent;
-                            }
-                        } else {
-                            content = contentEl.textContent;
-                        }
-                        
-                        if (content) {
-                            messages.push({ role, content });
-                        }
-                    });
-                }
-                
-                if (messages.length === 0) {
-                    showShareError("No conversation to share. Send at least one message first.");
-                    return;
-                }
-                
-                console.log("Sharing messages:", messages); // Debug
-                
-                // Make API request to share chat
-                const response = await fetch('/api/share_chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        title: document.title || "FinNews Conversation",
-                        messages: messages
-                    })
-                });
-                
-                if (!response.ok) {
-                    const data = await response.json();
-                    throw new Error(data.error || 'Failed to share conversation');
-                }
-                
-                const data = await response.json();
-                
-                // Create share URL
-                const baseUrl = window.location.origin;
-                const shareUrl = `${baseUrl}/shared/${data.share_id}`;
-                
-                // Show share URL
-                document.getElementById('share-loader').classList.add('hidden');
-                document.getElementById('share-url-container').classList.remove('hidden');
-                
-                shareUrlInput.value = shareUrl;
-                shareUrlInput.focus();
-                shareUrlInput.select();
-                
-                // Set up social media share buttons
-                setupSocialShareButtons(shareUrl);
-                
-            } catch (error) {
-                console.error('Error sharing conversation:', error);
-                showShareError(error.message || 'Failed to share conversation. Please try again.');
-            }
-        }
-
+        // Handle social share functionality
         function setupSocialShareButtons(shareUrl) {
             const title = encodeURIComponent("FinNews AI Conversation");
             
-            // LinkedIn
             document.getElementById('share-linkedin').addEventListener('click', function() {
                 window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
             });
             
-            // Facebook
             document.getElementById('share-facebook').addEventListener('click', function() {
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&title=${title}`, '_blank');
             });
             
-            // Reddit
             document.getElementById('share-reddit').addEventListener('click', function() {
                 window.open(`https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${title}`, '_blank');
             });
             
-            // Twitter/X
             document.getElementById('share-twitter').addEventListener('click', function() {
                 window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${title}`, '_blank');
             });
@@ -813,201 +850,149 @@
             errorEl.classList.remove('hidden');
         }
         
-        // Add event listeners for share buttons
-        shareButton.addEventListener('click', shareChat);
-        mobileShareButton.addEventListener('click', shareChat);
-        mobileShareMenuButton.addEventListener('click', function() {
-            shareChat();
-            mobileMenu.classList.add('hidden');
-        });
-        
-        // Add event listeners for share dialog
-        closeShareButton.addEventListener('click', function() {
-            shareDialog.classList.add('hidden');
-        });
-        
-        shareDialogBackdrop.addEventListener('click', function() {
-            shareDialog.classList.add('hidden');
-        });
-        
-        document.getElementById('share-button-dialog').addEventListener('click', generateShareLink);
-        
-        // Add event listener for copy button
-        if (copyShareButton) {
-            copyShareButton.addEventListener('click', function() {
-                const textToCopy = shareUrlInput.value;
-                
-                // Use modern Clipboard API
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Success
-                    const originalText = copyShareButton.textContent;
-                    
-                    copyShareButton.textContent = 'Copied!';
-                    copyShareButton.classList.add('bg-primary');
-                    copyShareButton.classList.remove('bg-accent', 'hover:bg-accent/80');
-                    
-                    setTimeout(() => {
-                        copyShareButton.textContent = originalText;
-                        copyShareButton.classList.remove('bg-primary');
-                        copyShareButton.classList.add('bg-accent', 'hover:bg-accent/80');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy text: ', err);
-                    alert('Failed to copy the link. Please try selecting and copying manually.');
-                });
-            });
-        }
-
-        // Send message on form submit
         chatForm.addEventListener('submit', function(e) {
             e.preventDefault();
             sendMessage();
         });
 
-        // Implement send message functionality
         function sendMessage() {
             const query = chatInput.value.trim();
             const depth = searchDepth.value;
             
             if (!query) return;
             
-            // Hide welcome screen if visible
             if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
                 welcomeScreen.classList.add('hidden');
             }
             
-            // Add user message to UI
             addMessageToUI('user', query);
             
-            // Clear input and reset height
             chatInput.value = '';
             chatInput.style.height = 'auto';
             
-            // Show loading indicator
             showLoadingIndicator();
             
-            // Scroll to bottom of messages
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // Create a new message container for the assistant response
             const messageId = 'msg-' + Date.now();
             const messageContainer = document.createElement('div');
             messageContainer.className = 'chat-message assistant flex items-start mb-4 animate-fade-in';
+            messageContainer.id = messageId;
             messageContainer.innerHTML = `
-                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white mr-3">
-                    <span class="text-sm font-bold">AI</span>
-                </div>
-                <div class="flex-1 p-4 bg-neutral-700/30 rounded-lg">
-                    <div id="${messageId}" class="prose dark:prose-invert max-w-none break-words"></div>
+                <div class="flex-shrink-0 h-8 w-8 bg-primary mr-3 rounded-sm flex items-center justify-center">AI</div>
+                <div id="${messageId}-content" class="message-content bg-neutral text-gray-200 markdown-content prose prose-sm prose-invert max-w-none p-3 md:p-5 rounded-lg max-w-[90%] shadow-md">
                 </div>
             `;
             
-            // Remove loading indicator before adding the new message container
             removeLoadingIndicator();
             
-            // Add the message container to the chat
             chatMessages.appendChild(messageContainer);
             
-            // Get the message content element
-            const messageContentEl = document.getElementById(messageId);
+            const messageEl = chatMessages.lastElementChild;
+            const messageContentEl = document.getElementById(`${messageId}-content`);
             
-            // Initialize content sections
             let newsContent = "";
             let sentimentContent = "";
             let disclaimerContent = "";
             
-            // Use Server-Sent Events for streaming
+            currentStreamingMessageId = messageId;
+            
+            window.fullStreamedContent[messageId] = {
+                markdown: "", 
+                html: "",     
+                complete: false,
+                parts: {
+                    news: "",
+                    sentiment: "",
+                    disclaimer: ""
+                }
+            };
+            
             const eventSource = new EventSource(`/api/stream_news?query=${encodeURIComponent(query)}&search_depth=${encodeURIComponent(depth)}`);
             
             eventSource.onmessage = function(event) {
                 try {
                     const data = JSON.parse(event.data);
-                    
-                    if (data.error) {
-                        messageContentEl.innerHTML = `<p>Error: ${data.error}</p>`;
-                        eventSource.close();
-                        return;
-                    }
-                    
-                    if (data.content === '[DONE]') {
-                        // Stream complete
-                        eventSource.close();
-                        return;
-                    }
-                    
                     const type = data.type || 'content';
+                    
+                    // Capture raw data for sharing before any processing
+                    if (currentStreamingMessageId) {
+                        switch (type) {
+                            case 'start':
+                                window.fullStreamedContent[currentStreamingMessageId].parts.news = data.content;
+                                break;
+                            case 'content':
+                                window.fullStreamedContent[currentStreamingMessageId].parts.news += data.content;
+                                break;
+                            case 'sentiment':
+                                window.fullStreamedContent[currentStreamingMessageId].parts.sentiment = data.content;
+                                break;
+                            case 'disclaimer':
+                                window.fullStreamedContent[currentStreamingMessageId].parts.disclaimer = data.content;
+                                break;
+                        }
+                        
+                        // Update the combined markdown content
+                        const storedContent = window.fullStreamedContent[currentStreamingMessageId];
+                        storedContent.markdown = storedContent.parts.news + 
+                                               storedContent.parts.sentiment + 
+                                               storedContent.parts.disclaimer;
+                        console.log(`[DEBUG] Updated stored markdown for ${currentStreamingMessageId}`);
+                    }
                     
                     switch (type) {
                         case 'start':
-                            // Initial content
                             newsContent = data.content;
                             break;
                         case 'content':
-                            // Append to news content
                             newsContent += data.content;
                             break;
                         case 'loading_sentiment':
-                            // Replace existing sentiment content with loading indicator
                             sentimentContent = data.content;
                             break;
                         case 'sentiment':
-                            // Set sentiment content
                             sentimentContent = data.content;
                             break;
                         case 'disclaimer':
-                            // Add disclaimer content
                             disclaimerContent = data.content;
                             break;
                     }
                     
-                    // Update display with combined content
-                    messageContentEl.innerHTML = marked.parse(newsContent + sentimentContent + disclaimerContent);
+                    const combinedMarkdown = newsContent + sentimentContent + disclaimerContent;
+                    const renderedHTML = marked.parse(combinedMarkdown);
+                    messageContentEl.innerHTML = renderedHTML;
                     
-                    // Apply styling enhancements to tables and scores
-                    applyTableStyling(messageContentEl);
-                    
-                    // Make links open in new tabs
-                    messageContentEl.querySelectorAll('a').forEach(link => {
-                        link.setAttribute('target', '_blank');
-                        link.setAttribute('rel', 'noopener noreferrer');
-                        
-                        // Apply special styling for citation links in parentheses
-                        const parentText = link.parentNode.textContent;
-                        if (parentText.includes('(') && parentText.includes(')')) {
-                            link.classList.add('citation-link');
-                        }
-                    });
-                    
-                    // If the message is [DONE], close the EventSource and re-enable the input
-                    if (data.content === '[DONE]') {
-                        eventSource.close();
-                        inputEl.disabled = false;
-                        submitBtn.disabled = false;
-                        loadingIndicator.style.display = 'none';
-                        submitBtn.innerText = 'Send';
-                        inputEl.focus();
+                    if (currentStreamingMessageId) {
+                        window.fullStreamedContent[currentStreamingMessageId].html = renderedHTML;
                     }
                     
-                    // Scroll to the bottom of the chat container
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    applyTableStyling(messageContentEl);
+                    
+                    if (data.content === '[DONE]') {
+                        eventSource.close();
+                        
+                        if (currentStreamingMessageId) {
+                            window.fullStreamedContent[currentStreamingMessageId].complete = true;
+                            const finalRenderedHTML = messageContentEl.innerHTML;
+                            window.fullStreamedContent[currentStreamingMessageId].final = finalRenderedHTML;
+                        }
+                        
+                        currentStreamingMessageId = null;
+                        updateChatState();
+                    }
                     
                 } catch (error) {
-                    console.error("Error parsing event data:", error);
+                    console.error("Error processing streaming event:", error);
                 }
             };
             
-            eventSource.onerror = function(error) {
-                console.error("EventSource error:", error);
-                messageContentEl.innerHTML += `<p>Error: Connection to server failed. Please try again.</p>`;
+            eventSource.onerror = function() {
                 eventSource.close();
             };
             
-            // Update conversation history for sharing
             conversationHistory.push({role: 'user', content: query});
-            // We'll update the assistant's response once streaming is complete
         }
         
-        // Add message to UI
         function addMessageToUI(role, content) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message flex items-start ${role === 'user' ? 'user-message flex-row-reverse' : 'assistant-message'} mb-6`;
@@ -1021,18 +1006,11 @@
             
             if (role === 'assistant') {
                 try {
-                    // First check if marked is available
-                    if (typeof marked === 'undefined') {
-                        console.error('marked library is not available');
-                        messageContent.innerHTML = content;
-                    } else {
-                        // Use the global processMarkdown function
-                        const processedContent = processMarkdown(content);
-                        const markdownDiv = document.createElement('div');
-                        markdownDiv.className = 'markdown-rendered';
-                        markdownDiv.innerHTML = processedContent;
-                        messageContent.appendChild(markdownDiv);
-                    }
+                    const processedContent = processMarkdown(content);
+                    const markdownDiv = document.createElement('div');
+                    markdownDiv.className = 'markdown-rendered';
+                    markdownDiv.innerHTML = processedContent;
+                    messageContent.appendChild(markdownDiv);
                 } catch (error) {
                     console.error('Error parsing markdown:', error);
                     messageContent.textContent = content;
@@ -1045,26 +1023,21 @@
             messageDiv.appendChild(messageContent);
             chatMessages.appendChild(messageDiv);
             
-            // Update conversation history for sharing
             conversationHistory.push({role: role, content: content});
             
-            // Make external links open in new tabs
-            if (role === 'assistant') {
-                messageContent.querySelectorAll('a').forEach(link => {
-                    link.setAttribute('target', '_blank');
-                    link.setAttribute('rel', 'noopener noreferrer');
-                });
-            }
+            messageContent.querySelectorAll('a').forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            });
         }
         
-        // Show loading indicator
         function showLoadingIndicator() {
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'loading-indicator';
             loadingDiv.className = 'message flex items-start';
             
             const avatar = document.createElement('div');
-            avatar.className = 'flex-shrink-0 h-10 w-10 bg-primary mr-3 rounded-lg flex items-center justify-center text-white shadow-md';
+            avatar.className = 'flex-shrink-0 h-10 w-10 bg-primary mr-3 rounded-sm flex items-center justify-center text-white shadow-md';
             avatar.textContent = 'F';
             
             const loadingContent = document.createElement('div');
@@ -1082,7 +1055,6 @@
             chatMessages.appendChild(loadingDiv);
         }
         
-        // Remove loading indicator
         function removeLoadingIndicator() {
             const loadingIndicator = document.getElementById('loading-indicator');
             if (loadingIndicator) {
@@ -1090,12 +1062,9 @@
             }
         }
         
-        // Add function to apply custom table styling
         function applyTableStyling(container) {
-            // Apply styling to tables
             const tables = container.querySelectorAll('table');
             tables.forEach(table => {
-                // Force table to use proper display
                 table.style.display = 'table';
                 table.style.width = '100%';
                 table.style.maxWidth = '100%';
@@ -1106,7 +1075,6 @@
                 table.style.borderRadius = '8px';
                 table.style.overflow = 'hidden';
                 
-                // Style table headers
                 const headers = table.querySelectorAll('th');
                 headers.forEach(th => {
                     th.style.backgroundColor = '#2563EB';
@@ -1117,26 +1085,22 @@
                     th.style.border = '1px solid #1E40AF';
                 });
                 
-                // Style the Date column
                 const dateHeaders = table.querySelectorAll('th:first-child');
                 dateHeaders.forEach(th => {
                     th.style.width = '20%';
                 });
                 
-                // Style the News column
                 const newsHeaders = table.querySelectorAll('th:nth-child(2)');
                 newsHeaders.forEach(th => {
                     th.style.width = '60%';
                 });
                 
-                // Style the Score column
                 const scoreHeaders = table.querySelectorAll('th:last-child');
                 scoreHeaders.forEach(th => {
                     th.style.width = '20%';
                     th.style.textAlign = 'center';
                 });
                 
-                // Style table cells
                 const cells = table.querySelectorAll('td');
                 cells.forEach(td => {
                     td.style.padding = '0.75rem 1rem';
@@ -1144,7 +1108,6 @@
                     td.style.verticalAlign = 'top';
                 });
                 
-                // Style specific columns
                 const dateCells = table.querySelectorAll('td:first-child');
                 dateCells.forEach(td => {
                     td.style.width = '20%';
@@ -1155,7 +1118,6 @@
                     td.style.width = '60%';
                 });
                 
-                // Find all score cells and color them based on value
                 const scoreCells = table.querySelectorAll('td:last-child');
                 scoreCells.forEach(td => {
                     td.style.width = '20%';
@@ -1165,26 +1127,24 @@
                     
                     const scoreText = td.textContent.trim();
                     if (scoreText.includes('-')) {
-                        td.style.color = '#EF4444'; // Red for negative
+                        td.style.color = '#EF4444'; 
                         td.classList.add('negative-score');
                     } else if (!isNaN(parseFloat(scoreText))) {
-                        td.style.color = '#10B981'; // Green for positive
+                        td.style.color = '#10B981'; 
                         td.classList.add('positive-score');
                     }
                 });
                 
-                // Style alternating rows
                 const rows = table.querySelectorAll('tr');
                 rows.forEach((row, index) => {
-                    if (index % 2 === 1) { // odd rows (excluding header)
+                    if (index % 2 === 1) { 
                         row.style.backgroundColor = '#1F2937';
-                    } else if (index > 0) { // even rows (excluding header)
+                    } else if (index > 0) { 
                         row.style.backgroundColor = '#111827';
                     }
                 });
             });
             
-            // Style Sentiment Analysis headings
             const sentimentHeadings = container.querySelectorAll('h3');
             sentimentHeadings.forEach(heading => {
                 if (heading.textContent.includes('Sentiment Analysis')) {
@@ -1203,19 +1163,15 @@
                 }
             });
             
-            // Enhance all citation links (domain.com) in the text
             const paragraphs = container.querySelectorAll('p');
             paragraphs.forEach(p => {
-                // Style citation links in parentheses
                 let content = p.innerHTML;
                 
-                // Find all parenthetical citations (domain.com) and apply styling
                 content = content.replace(/\(([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/g, 
                     '(<a href="https://$1" class="citation-link" target="_blank" rel="noopener noreferrer">$1</a>)');
                 
                 p.innerHTML = content;
                 
-                // Style Overall Sentiment Score
                 if (p.textContent.includes('Overall Sentiment Score')) {
                     p.classList.add('overall-score');
                     p.style.fontWeight = 'bold';
@@ -1229,12 +1185,9 @@
                 }
             });
             
-            // Style numbered sections (1. Title, 2. Title, etc.)
             paragraphs.forEach(p => {
                 const text = p.innerHTML;
-                // Look for numbered sections like "1. FII Holdings at a Decade Low"
                 if (/^\d+\.\s+<strong>.*<\/strong>/.test(text) || /^\d+\.\s+.*/.test(text)) {
-                    // Apply special styling to the section titles
                     let newText = text.replace(/^(\d+\.\s+)(.*)/, function(match, number, title) {
                         return `<span class="section-title">${number}${title}</span>`;
                     });
@@ -1244,11 +1197,14 @@
                 }
             });
             
-            // Add spacing between paragraphs
             paragraphs.forEach(p => {
                 p.style.marginBottom = '1.5rem';
                 p.style.lineHeight = '1.8';
             });
+        }
+        
+        function updateChatState() {
+            // Update chat state logic here
         }
     });
 </script>

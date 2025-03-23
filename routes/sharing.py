@@ -27,22 +27,49 @@ async def share_chat(request: Request, data: Dict[str, Any]):
                 content={"error": "No messages provided"}
             )
         
+        # Log incoming data for debugging
+        print("SHARING REQUEST DATA:")
+        print(f"Title: {data.get('title', 'FinNews Conversation')}")
+        print(f"Messages count: {len(data.get('messages', []))}")
+        
+        # Process messages to ensure HTML content is preserved
+        messages = []
+        for msg in data.get('messages', []):
+            role = msg.get('role', 'unknown')
+            content = msg.get('content', '')
+            
+            # For assistant messages, ensure HTML is preserved
+            if role == 'assistant' and content:
+                # Log a sample of the content
+                print(f"Assistant message content sample: {content[:200]}...")
+                
+                # No need to escape HTML - store as is
+                processed_message = {
+                    'role': role,
+                    'content': content  # Store the HTML content directly
+                }
+            else:
+                processed_message = {
+                    'role': role,
+                    'content': content
+                }
+            
+            messages.append(processed_message)
+        
         title = data.get('title', 'FinNews Conversation')
-        messages = data.get('messages', [])
         
         # Generate a unique ID for the shared chat
         share_id = str(uuid.uuid4())
         
-        # Get current time explicitly
+        # Get current time
         now = datetime.now()
         
-        # Store in database - ensure consistent storage format for messages
-        # The tortoise-orm JSONField stores Python objects directly
+        # Store in database with processed messages
         await SharedChat.create(
             id=share_id,
             title=title,
-            messages=messages,  # Store as a Python list directly
-            created_at=now  # Explicitly set the current time
+            messages=messages,
+            created_at=now
         )
         
         return {"share_id": share_id}
@@ -73,18 +100,28 @@ async def view_shared_chat(request: Request, share_id: str):
         
         # Parse the messages - handle both string and list formats
         messages = shared_chat.messages
+        
+        # Log retrieved messages for debugging
+        print(f"RETRIEVED SHARED CHAT (ID: {share_id})")
+        print(f"Message count: {len(messages) if isinstance(messages, list) else 'Not a list'}")
+        
         if isinstance(messages, str):
             try:
                 messages = json.loads(messages)
             except json.JSONDecodeError:
                 raise ValueError("Invalid message format in database")
         
+        # Log a sample of each message
+        for i, msg in enumerate(messages):
+            role = msg.get('role', 'unknown')
+            content_preview = str(msg.get('content', ''))[:100] + '...'
+            content_type = 'HTML' if '<' in str(msg.get('content', '')) else 'Text'
+            print(f"Message {i+1}: Role={role}, Type={content_type}, Preview={content_preview}")
+        
         title = shared_chat.title
         created_at = shared_chat.created_at
         
-        # Display the time as it is (already in IST) without adding offset
-        # The auto_now_add time from tortoise ORM is using the local server time
-        
+        # Return template with messages that preserve HTML
         return templates.TemplateResponse(
             "shared_chat.html",
             {
@@ -102,6 +139,5 @@ async def view_shared_chat(request: Request, share_id: str):
             {
                 "request": request,
                 "error_message": f"Error viewing shared chat: {str(e)}"
-            },
-            status_code=500
+            }
         )
