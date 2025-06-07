@@ -1,18 +1,22 @@
 import os
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from tortoise.contrib.fastapi import register_tortoise
+from dotenv import load_dotenv
+
+# ✅ Explicitly load .env from full path
+load_dotenv()
 
 # Import middlewares and routes
 from middleware import setup_middlewares
 from routes import router
 
-# Configure API KEY from environment variables
+# ✅ Configure API KEY from environment variables
 openai_api_key = os.getenv("OPENAI_API_KEY")
 if not openai_api_key:
-    print("WARNING: OPENAI_API_KEY environment variable not set. API calls will fail.")
+    print("❌ WARNING: OPENAI_API_KEY environment variable not set. API calls will fail.")
 
 # Create FastAPI app
 app = FastAPI(
@@ -49,7 +53,7 @@ async def not_found_handler(request: Request, exc):
 async def server_error_handler(request: Request, exc):
     templates = Jinja2Templates(directory="templates")
     return templates.TemplateResponse(
-        "error.html", 
+        "error.html",
         {"request": request, "error_message": str(exc)},
         status_code=500
     )
